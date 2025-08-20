@@ -22,4 +22,7 @@ body {
   --font-primary: "Inter", sans-serif;
   --font-secondary: "Raleway", sans-serif;
   --font-logo: "Montserrat", sans-serif;
+
+  /* UI */
+  --color-input-border: #8ea9e4;
 }
