@@ -13,7 +13,7 @@ const MainLayout = () => {
   return (
     <div className="min-h-screen flex flex-col">
       {!hideHeaderFooter && <Header />}
-      <main className="flex-grow p-8">
+      <main className="flex-grow">
         <Outlet />
       </main>
       {!hideHeaderFooter && <Footer />}

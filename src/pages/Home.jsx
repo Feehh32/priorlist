@@ -3,10 +3,8 @@ import HeroImage from "../assets/hero-image.png"; // substitua pelo nome do arqu
 
 const Home = () => {
   return (
-    <main className="px-6 md:px-12 py-12">
-      {/* Hero Section */}
+    <div className="px-4 md:px-16 py-16">
       <section className="flex flex-col-reverse md:flex-row items-center justify-between max-w-6xl mx-auto gap-8">
-        {/* Texto */}
         <div className="text-center md:text-left md:flex-1">
           <h1 className="text-4xl md:text-6xl font-bold font-logo text-primary mb-6">
             PriorList
@@ -29,8 +27,6 @@ const Home = () => {
             </Link>
           </div>
         </div>
-
-        {/* Imagem */}
         <div className="md:flex-1 flex justify-center">
           <img
             src={HeroImage}
@@ -40,7 +36,6 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Features Section */}
       <section className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-16 max-w-4xl mx-auto">
         <div className="p-6 rounded-xl shadow-md bg-white hover:shadow-lg transition">
           <h3 className="text-xl font-bold text-primary mb-2">✨ Simples</h3>
@@ -62,7 +57,6 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Call to Action Final */}
       <section className="mt-20 text-center">
         <h2 className="text-2xl md:text-3xl font-bold text-gray-800 mb-6">
           Pronto para organizar sua vida?
@@ -74,7 +68,7 @@ const Home = () => {
           Criar Conta Gratuitamente
         </Link>
       </section>
-    </main>
+    </div>
   );
 };
 

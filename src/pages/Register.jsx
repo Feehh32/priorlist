@@ -3,8 +3,8 @@ import FormInput from "../components/input/FormInput";
 
 const Register = () => {
   return (
-    <main className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
-      <section className=" bg-white max-w-2xl w-full shadow-md rounded-2xl">
+    <section className="min-h-screen flex items-center justify-center bg-gray-50 p-8 md:p-16">
+      <div className=" bg-white max-w-2xl w-full shadow-md rounded-2xl">
         <Link
           to="/"
           className="text-lg text-primary font-semibold text-center pt-4 pb-2 font-logo block"
@@ -12,7 +12,7 @@ const Register = () => {
         >
           Priorlist
         </Link>
-        <h2 className=" text-xl md:text-2xl font-medium text-center text-secondary mb-8">
+        <h2 className=" text-2xl md:text-3xl font-medium text-center text-secondary mb-8">
           Crie aqui sua conta gratuitamente
         </h2>
         <form className="px-8 pb-8 grid gap-4">
@@ -51,8 +51,8 @@ const Register = () => {
             </Link>
           </p>
         </form>
-      </section>
-    </main>
+      </div>
+    </section>
   );
 };
 
