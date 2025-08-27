@@ -2,7 +2,10 @@ import React from "react";
 
 const FormInput = ({ label, placeholder, type = "text", id }) => {
   return (
-    <label htmlFor={id} className="text-text-main font-semibold font-secondary">
+    <label
+      htmlFor={id}
+      className="text-text-main font-semibold font-secondary block"
+    >
       {label}
       <input
         type={type}

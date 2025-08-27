@@ -4,7 +4,7 @@ const About = () => {
   return (
     <section className="relative min-h-screen md:flex justify-center px-8 md:px-0">
       <div className="w-full h-full ">
-        <h1 className="text-3xl md:text-6xl font-logo text-align-center font-semibold text-primary mb-6 mt-8 text-center ">
+        <h1 className="text-3xl md:text-6xl font-secondary text-align-center font-semibold text-primary mb-6 mt-8 text-center ">
           Sobre o Priorlist
         </h1>
         <svg

@@ -20,7 +20,7 @@ const Login = () => {
             fill="rgba(255,255,255,0.1)"
           />
         </svg>
-        <h1 className="text-white text-4xl font-logo font-semibold max-w-md text-center relative z-10">
+        <h1 className="text-white text-4xl font-secondary font-semibold max-w-md text-center relative z-10">
           Organize suas tarefas de forma simples
         </h1>
       </section>
