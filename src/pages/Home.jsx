@@ -6,7 +6,7 @@ const Home = () => {
     <div className="px-4 md:px-16 py-16">
       <section className="flex flex-col-reverse md:flex-row items-center justify-between max-w-6xl mx-auto gap-8">
         <div className="text-center md:text-left md:flex-1">
-          <h1 className="text-4xl md:text-6xl font-bold font-logo text-primary mb-6">
+          <h1 className="text-4xl md:text-6xl font-bold font-secondary text-primary mb-6">
             PriorList
           </h1>
           <p className="text-lg md:text-xl text-gray-600 font-secondary mb-8">
