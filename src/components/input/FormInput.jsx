@@ -1,6 +1,14 @@
 import React from "react";
 
-const FormInput = ({ label, placeholder, type = "text", id }) => {
+const FormInput = ({
+  label,
+  placeholder,
+  type = "text",
+  id,
+  onChange,
+  value,
+  error,
+}) => {
   return (
     <label
       htmlFor={id}
@@ -11,11 +19,17 @@ const FormInput = ({ label, placeholder, type = "text", id }) => {
         type={type}
         name={id}
         id={id}
+        value={value}
+        onChange={onChange}
         placeholder={placeholder}
-        className="block border border-input-border rounded-lg w-full px-4 py-3 font-normal focus:border-primary outline-none focus:border-2 focus:ring-2 focus:ring-primary/40 font-primary shadow-sm bg-bg-main"
+        className="block border border-input-border rounded-lg w-full px-4 py-3 font-normal focus:border-primary outline-none focus:border-2 focus:ring-2 focus:ring-primary/40 font-primary shadow-sm bg-bg-main my-1"
       />
-      <span className="text-red-500 text-sm font-primary hidden">
-        o erro vai aqui
+      <span
+        className={`text-red-500 text-sm font-primary ${
+          error ? "block" : "hidden"
+        }`}
+      >
+        {error && error}
       </span>
     </label>
   );
