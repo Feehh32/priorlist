@@ -22,8 +22,8 @@ const Register = () => {
 
   // Function to control the inputs
   const handleChange = (e) => {
-    setBodyData(() => {
-      return { ...bodyData, [e.target.name]: e.target.value };
+    setBodyData((prev) => {
+      return { ...prev, [e.target.name]: e.target.value };
     });
   };
 
@@ -33,6 +33,7 @@ const Register = () => {
 
     const errors = registerValidator(bodyData);
     setFormErrors(errors);
+
     // if errors object is not empty, return e stop the function
     if (Object.keys(errors).length > 0) return;
 

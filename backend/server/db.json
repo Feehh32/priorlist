@@ -1,0 +1,17 @@
+{
+  "users": [
+    {
+      "id": "e194",
+      "name": "Fernando Pereira Joazeiro",
+      "email": "fernando.mkv@gmail.com",
+      "password": "123456"
+    },
+    {
+      "id": "47b1",
+      "name": "Soraya Alves",
+      "email": "soraya@email.com",
+      "password": "qwerty123"
+    }
+  ],
+  "tasks": []
+}
