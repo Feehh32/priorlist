@@ -1,7 +1,55 @@
 import { Link } from "react-router-dom";
 import FormInput from "../components/input/FormInput";
+import { useState } from "react";
+import useApiRequest from "../hooks/useApiRequest";
+import Spinner from "../components/UI/spinner";
+import loginValidator from "../utils/loginValidator";
+import { useNavigate } from "react-router-dom";
 
 const Login = () => {
+  const [loginData, setLoginData] = useState({
+    email: "",
+    password: "",
+  });
+  const [formErrors, setFormErrors] = useState({});
+  const [loading, setLoading] = useState(false);
+  // Custom hook to handle API requests
+  const { request, error } = useApiRequest();
+  const navigate = useNavigate();
+
+  // Function to control the inputs
+  const handleChange = (e) => {
+    setLoginData((prev) => {
+      return { ...prev, [e.target.name]: e.target.value };
+    });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    const errors = loginValidator(loginData);
+    setFormErrors(errors);
+
+    // if errors object is not empty, return e stop the function
+    if (Object.keys(errors).length > 0) {
+      setLoading(false);
+      return;
+    }
+
+    // Send the data to the backend
+    try {
+      const userData = await request("login", "POST", loginData);
+      if (userData.token) {
+        localStorage.setItem("token", userData.token);
+        localStorage.setItem("user", JSON.stringify(userData.user));
+        setLoading(false);
+        navigate("/tasks");
+      }
+    } catch {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="min-h-screen grid grid-cols-1 lg:grid-cols-2">
       <section className="hidden lg:flex items-center justify-center bg-gradient-to-br from-primary to-sky-700 relative">
@@ -36,25 +84,39 @@ const Login = () => {
           <h2 className=" text-2xl md:text-3xl font-medium text-center text-secondary mb-8">
             Faça login na sua conta
           </h2>
-          <form className="px-8 pb-8 grid gap-4">
+          <form
+            onSubmit={handleSubmit}
+            className="px-8 pb-8 grid gap-4"
+            noValidate
+          >
             <FormInput
               label="Email"
               placeholder="Seu email"
               id="email"
               type="email"
+              onChange={handleChange}
+              value={loginData.email}
+              error={formErrors.email}
             />
             <FormInput
               label="Senha"
               placeholder="Sua senha"
               id="password"
               type="password"
+              onChange={handleChange}
+              value={loginData.password}
+              error={formErrors.password}
             />
             <button
               type="submit"
-              className="w-full bg-primary text-white font-semibold py-3 rounded-lg hover:bg-blue-700 transition-colors mt-2 cursor-pointer font-secondary shadow-md"
+              className="w-full bg-primary text-white font-semibold py-3 rounded-lg hover:bg-blue-700 transition-colors mt-2 cursor-pointer font-secondary shadow-md flex items-center justify-center"
+              disabled={loading}
             >
-              Entrar
+              {loading ? <Spinner color="border-gray-200" /> : "Entrar"}
             </button>
+            {error && (
+              <p className="text-red-500 text-sm text-center">{error}</p>
+            )}
             <p className="text-sm text-center text-gray-600">
               Ainda nao tem conta?{" "}
               <Link

@@ -39,6 +39,7 @@ const useApiRequest = () => {
       }
       setData(json);
       setError(null);
+      return json;
     } catch (err) {
       setError("Não foi possível realizar a requisição");
       console.error(`Erro na requisição: ${err.message}`);
