@@ -8,6 +8,7 @@ const FormInput = ({
   onChange,
   value,
   error,
+  autoComplete,
 }) => {
   return (
     <label
@@ -22,6 +23,7 @@ const FormInput = ({
         value={value}
         onChange={onChange}
         placeholder={placeholder}
+        autoComplete={autoComplete}
         className="block border border-input-border rounded-lg w-full px-4 py-3 font-normal focus:border-primary outline-none focus:border-2 focus:ring-2 focus:ring-primary/40 font-primary shadow-sm bg-bg-main my-1"
       />
       <span

@@ -5,18 +5,24 @@ import Register from "./pages/Register";
 import Login from "./pages/Login";
 import Tasks from "./pages/Tasks";
 import About from "./pages/About";
+import { AuthProvider } from "./contexts/AuthProvider";
+import ProtectedRoutes from "./components/Routes/ProtectedRoutes";
 
 function App() {
   return (
-    <Routes>
-      <Route element={<MainLayout />}>
-        <Route index element={<Home />} />
-        <Route path="register" element={<Register />} />
-        <Route path="login" element={<Login />} />
-        <Route path="tasks" element={<Tasks />} />
-        <Route path="about" element={<About />} />
-      </Route>
-    </Routes>
+    <AuthProvider>
+      <Routes>
+        <Route element={<MainLayout />}>
+          <Route index element={<Home />} />
+          <Route path="register" element={<Register />} />
+          <Route path="login" element={<Login />} />
+          <Route path="about" element={<About />} />
+          <Route element={<ProtectedRoutes />}>
+            <Route path="tasks" element={<Tasks />} />
+          </Route>
+        </Route>
+      </Routes>
+    </AuthProvider>
   );
 }
 

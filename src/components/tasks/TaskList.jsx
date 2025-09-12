@@ -1,5 +1,6 @@
-import { Calendar, MoreVertical } from "lucide-react";
 import PropTypes from "prop-types";
+import { MdCalendarMonth } from "react-icons/md";
+import { MdMoreVert } from "react-icons/md";
 
 const priorityGradient = {
   low: "from-white to-green-100",
@@ -45,7 +46,7 @@ const TaskList = ({ tasks, onEdit }) => {
             </div>
             <div className="flex items-center justify-between gap-2 text-sm text-secondary mt-4 border-t border-gray-200 pt-4">
               <div className="flex items-center gap-2">
-                <Calendar size={16} />
+                <MdCalendarMonth size={16} />
                 <span>{task.deadline}</span>
               </div>
               <button
@@ -53,7 +54,7 @@ const TaskList = ({ tasks, onEdit }) => {
                 className=" top-4 right-4 text-secondary hover:text-primary transition cursor-pointer"
                 onClick={() => onEdit(task)}
               >
-                <MoreVertical size={20} />
+                <MdMoreVert size={20} />
               </button>
             </div>
           </div>
