@@ -11,6 +11,12 @@
       "name": "Soraya Alves",
       "email": "soraya@email.com",
       "password": "qwerty123"
+    },
+    {
+      "name": "John Doe",
+      "email": "johndoe@email.com",
+      "password": "qwerty123",
+      "id": "a0KbqBr"
     }
   ],
   "tasks": []

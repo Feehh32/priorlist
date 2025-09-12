@@ -1,10 +1,11 @@
 import { Link } from "react-router-dom";
 import FormInput from "../components/input/FormInput";
 import { useState } from "react";
-import useApiRequest from "../hooks/useApiRequest";
 import Spinner from "../components/UI/spinner";
 import loginValidator from "../utils/loginValidator";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
+import { useContext } from "react";
+import { AuthContext } from "../contexts/AuthContext";
 
 const Login = () => {
   const [loginData, setLoginData] = useState({
@@ -12,10 +13,11 @@ const Login = () => {
     password: "",
   });
   const [formErrors, setFormErrors] = useState({});
-  const [loading, setLoading] = useState(false);
-  // Custom hook to handle API requests
-  const { request, error } = useApiRequest();
+  const { login, error, loading } = useContext(AuthContext);
   const navigate = useNavigate();
+  const location = useLocation();
+
+  const from = location.state?.from?.pathname || "/tasks";
 
   // Function to control the inputs
   const handleChange = (e) => {
@@ -26,27 +28,19 @@ const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
+
     const errors = loginValidator(loginData);
     setFormErrors(errors);
 
     // if errors object is not empty, return e stop the function
     if (Object.keys(errors).length > 0) {
-      setLoading(false);
       return;
     }
 
     // Send the data to the backend
-    try {
-      const userData = await request("login", "POST", loginData);
-      if (userData.token) {
-        localStorage.setItem("token", userData.token);
-        localStorage.setItem("user", JSON.stringify(userData.user));
-        setLoading(false);
-        navigate("/tasks");
-      }
-    } catch {
-      setLoading(false);
+    const res = await login(loginData);
+    if (res) {
+      navigate(from, { replace: true });
     }
   };
 
@@ -103,6 +97,7 @@ const Login = () => {
               placeholder="Sua senha"
               id="password"
               type="password"
+              autoComplete="on"
               onChange={handleChange}
               value={loginData.password}
               error={formErrors.password}

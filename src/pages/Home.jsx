@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import HeroImage from "../assets/hero-image.png"; // substitua pelo nome do arquivo gerado
+import HeroImage from "../assets/hero-image.png";
 
 const Home = () => {
   return (

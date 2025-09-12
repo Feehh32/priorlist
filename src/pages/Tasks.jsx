@@ -2,7 +2,8 @@ import { useState } from "react";
 import TaskForm from "../components/taskForm/TaskForm";
 import TaskList from "../components/tasks/TaskList";
 import Modal from "../components/modal/Modal";
-import { Search } from "lucide-react";
+import { MdSearch } from "react-icons/md";
+
 const Tasks = () => {
   const [showModal, setShowModal] = useState(false);
   const [modalMode, setModalMode] = useState("create");
@@ -61,8 +62,8 @@ const Tasks = () => {
       <section className="flex flex-col items-center mt-8 md:mt-16 gap-4 w-full">
         <div className="w-full max-w-4xl flex justify-between flex-col md:flex-row">
           <div className="relative md:mb-0 mb-4">
-            <Search
-              className="absolute md:right-4 top-1/2 transform -translate-y-1/2 right-4 text-primary"
+            <MdSearch
+              className="absolute md:right-4 top-1/2 transform -translate-y-1/2 right-4 text-primary opacity-70"
               size={20}
             />
             <input

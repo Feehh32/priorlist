@@ -21,17 +21,38 @@ server.post("/login", (req, res) => {
   const user = users.find((u) => u.email === email && u.password === password);
   if (user) {
     res.status(200).json({
-      message: "Login bem-sucedido",
       token: "fake-jwt-token",
-      user: {
-        id: user.id,
-        name: user.name,
-        email: user.email,
-      },
+      id: user.id,
     });
   } else {
     res.status(401).json({ error: "Email ou senha inválidos" });
   }
+});
+
+server.get("/me", (req, res) => {
+  const authHeader = req.headers["authorization"];
+  if (!authHeader) {
+    return res.status(401).json({ error: "Token não fornecido" });
+  }
+
+  const token = authHeader.split(" ")[1];
+  if (token !== "fake-jwt-token") {
+    return res.status(403).json({ error: "Token inválido" });
+  }
+
+  const userId = req.query.id;
+  if (!userId) {
+    return res.status(400).json({ error: "Id do usuário não fornecido" });
+  }
+
+  const user = router.db.get("users").find({ id: userId }).value();
+  if (!user) {
+    return res.status(404).json({ error: "Usuário não encontrado" });
+  }
+
+  // eslint-disable-next-line no-unused-vars
+  const { password, ...userData } = user;
+  res.status(200).json(userData);
 });
 
 // usa o roteador padrão do json-server
