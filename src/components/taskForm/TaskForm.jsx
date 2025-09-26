@@ -7,6 +7,7 @@ import taskFormValidator from "../../utils/taskFormValidator";
 const TaskForm = ({ onSubmit, modalMode, taskToEdit }) => {
   const { user } = useContext(AuthContext);
   const [formErrors, setFormErrors] = useState({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const [formData, setFormData] = useState({
     userId: user.id,
@@ -36,7 +37,7 @@ const TaskForm = ({ onSubmit, modalMode, taskToEdit }) => {
       [name]: value,
     }));
   };
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     // Using a util function to validate the title field
@@ -45,8 +46,12 @@ const TaskForm = ({ onSubmit, modalMode, taskToEdit }) => {
 
     // if errors object is not empty, return e stop the function
     if (Object.keys(errors).length > 0) return;
-
-    onSubmit(formData);
+    setIsSubmitting(true);
+    try {
+      await onSubmit(formData);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -125,6 +130,7 @@ const TaskForm = ({ onSubmit, modalMode, taskToEdit }) => {
       </fieldset>
       <button
         type="submit"
+        disabled={isSubmitting}
         className="w-full bg-primary text-white font-semibold py-3 rounded-lg hover:bg-blue-700 transition-colors mt-2 cursor-pointer font-secondary shadow-md"
       >
         {modalMode === "create" ? "Criar Tarefa" : "Salvar Alterações"}

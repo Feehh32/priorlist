@@ -74,10 +74,10 @@
       "description": "",
       "deadline": "2025-09-25",
       "priority": "medium",
-      "completed": false,
-      "archived": false,
+      "completed": true,
+      "archived": true,
       "createdAt": "2025-09-26T01:06:57.626Z",
-      "updatedAt": "2025-09-26T01:06:57.626Z",
+      "updatedAt": "2025-09-26T22:48:09.250Z",
       "id": 6
     },
     {
@@ -89,7 +89,7 @@
       "completed": false,
       "archived": false,
       "createdAt": "2025-09-26T01:07:47.152Z",
-      "updatedAt": "2025-09-26T01:07:47.152Z",
+      "updatedAt": "2025-09-26T19:50:40.811Z",
       "id": 7
     }
   ]
