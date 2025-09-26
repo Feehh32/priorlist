@@ -8,6 +8,16 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+@layer base {
+  .search-input::-webkit-search-cancel-button,
+  .search-input::-webkit-search-decoration,
+  .search-input::-webkit-search-results-button,
+  .search-input::-webkit-search-results-decoration {
+    -webkit-appearance: none;
+    appearance: none;
+  }
+}
+
 @theme {
   /* colors */
   --color-primary: #2563eb;
