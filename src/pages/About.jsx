@@ -1,10 +1,6 @@
 import { Link } from "react-router-dom";
-import { AuthContext } from "../contexts/AuthContext";
-import { useContext } from "react";
 
 const About = () => {
-  const { user } = useContext(AuthContext);
-  console.log(user);
   return (
     <section className="relative min-h-screen md:flex justify-center px-8 md:px-0">
       <div className="w-full h-full ">
