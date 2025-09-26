@@ -1,6 +1,6 @@
 import { Link, useNavigate } from "react-router-dom";
 import FormInput from "../components/input/FormInput";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import useApiRequest from "../hooks/useApiRequest";
 import Spinner from "../components/UI/spinner";
 import registerValidator from "../utils/registerValidators";
@@ -14,6 +14,11 @@ const Register = () => {
   });
   const [success, setSuccess] = useState("");
   const [formErrors, setFormErrors] = useState({});
+
+  // dinamic title
+  useEffect(() => {
+    document.title = "PriorList | Registre-se";
+  }, []);
 
   // Custom hook to handle API requests
   const { request, error, loading } = useApiRequest();

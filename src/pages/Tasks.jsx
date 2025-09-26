@@ -17,6 +17,11 @@ const Tasks = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const { request, loading } = useApiRequest();
 
+  // dinamic title
+  useEffect(() => {
+    document.title = "PriorList | Suas tarefas";
+  }, []);
+
   // Fetch tasks
   useEffect(() => {
     const fetchTasks = async () => {

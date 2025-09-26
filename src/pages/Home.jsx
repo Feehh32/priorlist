@@ -1,7 +1,12 @@
 import { Link } from "react-router-dom";
 import HeroImage from "../assets/hero-image.png";
+import { useEffect } from "react";
 
 const Home = () => {
+  // dinamic title
+  useEffect(() => {
+    document.title = "PriorList | Lista de tarefas avançadas";
+  }, []);
   return (
     <div className="px-4 md:px-16 py-16">
       <section className="flex flex-col-reverse md:flex-row items-center justify-between max-w-6xl mx-auto gap-8">
