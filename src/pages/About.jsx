@@ -1,6 +1,12 @@
 import { Link } from "react-router-dom";
+import { useEffect } from "react";
 
 const About = () => {
+  // dinamic title
+  useEffect(() => {
+    document.title = "PriorList | Sobre";
+  }, []);
+
   return (
     <section className="relative min-h-screen md:flex justify-center px-8 md:px-0">
       <div className="w-full h-full ">

@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import FormInput from "../components/input/FormInput";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Spinner from "../components/UI/spinner";
 import loginValidator from "../utils/loginValidator";
 import { useNavigate, useLocation } from "react-router-dom";
@@ -18,6 +18,11 @@ const Login = () => {
   const location = useLocation();
 
   const from = location.state?.from?.pathname || "/tasks";
+
+  // dinamic title
+  useEffect(() => {
+    document.title = "PriorList | Entrar com email e senha";
+  }, []);
 
   // Function to control the inputs
   const handleChange = (e) => {

@@ -17,6 +17,11 @@ const Tasks = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const { request, loading } = useApiRequest();
 
+  // dinamic title
+  useEffect(() => {
+    document.title = "PriorList | Suas tarefas";
+  }, []);
+
   // Fetch tasks
   useEffect(() => {
     const fetchTasks = async () => {
@@ -48,8 +53,10 @@ const Tasks = () => {
     if (response && !response.error) {
       addToast("Tarefa criada com sucesso!", "success");
       setTasks((prev) => [...prev, response]);
+      setShowModal(false);
     }
     setShowModal(false);
+    return false;
   };
 
   // Function to update a task and update the list
@@ -66,8 +73,11 @@ const Tasks = () => {
       setTasks((prev) =>
         prev.map((task) => (task.id === response.id ? response : task))
       );
+      setShowModal(false);
+      return true;
     }
     setShowModal(false);
+    return false;
   };
 
   // Function to delete a task and update the list
