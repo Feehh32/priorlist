@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { MdSearch } from "react-icons/md";
 import TaskForm from "../components/taskForm/TaskForm";
 import TaskList from "../components/tasks/TaskList";
@@ -7,6 +7,9 @@ import Spinner from "../components/UI/spinner";
 import ToastMsg from "../components/notifications/ToastMsg";
 import useApiRequest from "../hooks/useApiRequest";
 import handleApiError from "../utils/taskApiErrors";
+import { AuthContext } from "../contexts/AuthContext";
+import { useContext } from "react";
+import TaskSortMenu from "../components/tasks/TaskSortMenu";
 
 const Tasks = () => {
   const [showModal, setShowModal] = useState(false);
@@ -16,6 +19,8 @@ const Tasks = () => {
   const [toasts, setToasts] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const { request, loading } = useApiRequest();
+  const { user } = useContext(AuthContext);
+  const originalTaskRef = useRef([]);
 
   // dinamic title
   useEffect(() => {
@@ -25,12 +30,18 @@ const Tasks = () => {
   // Fetch tasks
   useEffect(() => {
     const fetchTasks = async () => {
-      const response = await request("tasks", "GET");
-      if (response && !response.error) setTasks(response);
+      const response = await request(`tasks?userId=${user.id}`, "GET");
+      if (response && !response.error) {
+        originalTaskRef.current = response;
+
+        setTasks(response);
+        const saverdOrder = localStorage.getItem("sortOption") || "default";
+        handleSortChange(saverdOrder, response);
+      }
     };
 
     fetchTasks();
-  }, [request]);
+  }, [request, user.id]);
 
   if (loading)
     return (
@@ -53,6 +64,7 @@ const Tasks = () => {
     if (response && !response.error) {
       addToast("Tarefa criada com sucesso!", "success");
       setTasks((prev) => [...prev, response]);
+      originalTaskRef.current = [...originalTaskRef.current, response];
       setShowModal(false);
     }
     setShowModal(false);
@@ -73,6 +85,10 @@ const Tasks = () => {
       setTasks((prev) =>
         prev.map((task) => (task.id === response.id ? response : task))
       );
+
+      originalTaskRef.current = originalTaskRef.current.map((task) =>
+        task.id === response.id ? response : task
+      );
       setShowModal(false);
       return true;
     }
@@ -88,6 +104,10 @@ const Tasks = () => {
     if (response && !response.error) {
       if (showToast) addToast("Tarefa deletada com sucesso!", "success");
       setTasks((prev) => prev.filter((task) => task.id !== taskId));
+
+      originalTaskRef.current = originalTaskRef.current.filter(
+        (task) => task.id !== taskId
+      );
     }
 
     return response;
@@ -129,6 +149,33 @@ const Tasks = () => {
     normalizeString(task.title).includes(normalizeString(searchTerm))
   );
 
+  // Function to handle task sorting options
+  const handleSortChange = (newSort, baseTasks = tasks) => {
+    const priorityOrder = { high: 1, medium: 2, low: 3 };
+    switch (newSort) {
+      case "urgents":
+      case "priority":
+        setTasks(
+          [...baseTasks].sort(
+            (a, b) => priorityOrder[a.priority] - priorityOrder[b.priority]
+          )
+        );
+        break;
+      case "recents":
+        setTasks(
+          [...baseTasks].sort(
+            (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+          )
+        );
+        break;
+      case "a-z":
+        setTasks([...baseTasks].sort((a, b) => a.title.localeCompare(b.title)));
+        break;
+      default:
+        setTasks(originalTaskRef.current);
+    }
+  };
+
   return (
     <section className="relative min-h-screen px-4 md:px-16 py-8 md:py-16">
       <h1 className="text-2xl md:text-6xl text-primary font-secondary font-semibold text-center">
@@ -138,7 +185,7 @@ const Tasks = () => {
         <div className="w-full max-w-4xl flex justify-between flex-col md:flex-row">
           <div className="relative md:mb-0 mb-4">
             <MdSearch
-              className="absolute md:right-4 top-1/2 transform -translate-y-1/2 right-4 text-primary opacity-70"
+              className="absolute md:right-4 top-1/2 md:top-1/3 transform -translate-y-1/2 right-4 text-primary opacity-70"
               size={20}
             />
             <input
@@ -149,9 +196,10 @@ const Tasks = () => {
               className="search-input w-full md:min-w-md border border-input-border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-primary/40"
             />
           </div>
+          <TaskSortMenu handleSortOptions={handleSortChange} />
           <button
             type="button"
-            className="bg-primary text-white px-4 py-2 rounded-lg shadow hover:bg-primary/90 transition cursor-pointer"
+            className="bg-primary text-white px-4 py-2 rounded-lg shadow hover:bg-primary/90 transition cursor-pointer md:self-start"
             onClick={() => {
               setShowModal(true);
               setModalMode("create");
@@ -180,7 +228,7 @@ const Tasks = () => {
           )}
         </div>
       </section>
-      <div className="fixed bottom-6 left-1/2 -translate-x-1/2 flex flex-col gap-2 z-50">
+      <div className="fixed bottom-6 w-full md:w-auto left-1/2 -translate-x-1/2 flex flex-col gap-2 z-50">
         {toasts.map((toast) => (
           <ToastMsg
             key={toast.id}
