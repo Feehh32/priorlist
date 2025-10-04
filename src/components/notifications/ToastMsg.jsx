@@ -32,13 +32,15 @@ const ToastMsg = ({ message, type, onClose }) => {
   }, [message, onClose]);
 
   return (
-    <div className="transition-all duration-300 translate-y-[-100%] flex items-center gap-3 bg-gray-800/90 text-white px-4 py-3 rounded-lg shadow-lg">
+    <div className="transition-all duration-300 translate-y-[-100%] flex items-center justify-between gap-3 bg-gray-800/90 text-white px-4 py-3 rounded-lg shadow-lg mx-2 md:mx-0">
       <span
         className={`${bgColors[type]} rounded-full p-1 flex items-center justify-between`}
       >
         {icons[type]}
       </span>
-      <p className="font-secondary font-medium text-white">{message}</p>
+      <p className="font-secondary font-medium text-white text-sm md:text-base">
+        {message}
+      </p>
       <button className="ml-2 p-2 cursor-pointer" onClick={onClose}>
         <MdOutlineClose
           size={24}

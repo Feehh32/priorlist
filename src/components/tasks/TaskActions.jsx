@@ -9,6 +9,7 @@ const TaskActions = ({ task, onEdit, onDelete }) => {
   const [isOpen, setIsOpen] = useState(false);
   const buttonRef = useRef(null);
   const menuRef = useRef(null);
+  const portalRef = useRef(null);
   const [coords, setCoords] = useState({ top: 0, left: 0 });
 
   const handleToogle = () => {
@@ -22,7 +23,7 @@ const TaskActions = ({ task, onEdit, onDelete }) => {
     setIsOpen((prev) => !prev);
   };
 
-  useOutsideClick(menuRef, () => setIsOpen(false));
+  useOutsideClick([menuRef, portalRef], () => setIsOpen(false));
 
   return (
     <div className="relative flex items-center gap-2">
@@ -58,6 +59,7 @@ const TaskActions = ({ task, onEdit, onDelete }) => {
             <ul
               className="absolute w-40 bg-white shadow-md rounded-md z-50"
               style={{ top: coords.top, left: coords.left }}
+              ref={portalRef}
             >
               <li className="border-b border-gray-200">
                 <button
@@ -77,7 +79,7 @@ const TaskActions = ({ task, onEdit, onDelete }) => {
               <li>
                 <button
                   onClick={() => {
-                    onDelete(task);
+                    onDelete(task.id);
                     setIsOpen(false);
                   }}
                   className="flex gap-2 items-center text-sm p-3 w-full text-left"
