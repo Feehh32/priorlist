@@ -104,10 +104,10 @@
       "description": "",
       "deadline": "2025-10-02",
       "priority": "high",
-      "completed": false,
-      "archived": false,
+      "completed": true,
+      "archived": true,
       "createdAt": "2025-10-02T17:52:23.935Z",
-      "updatedAt": "2025-10-02T17:52:23.935Z",
+      "updatedAt": "2025-10-05T03:13:50.121Z",
       "id": 10
     },
     {
