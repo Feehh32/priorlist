@@ -5,6 +5,7 @@ import Register from "./pages/Register";
 import Login from "./pages/Login";
 import Tasks from "./pages/Tasks";
 import About from "./pages/About";
+import PageNotFound from "./pages/PageNotFound";
 import { AuthProvider } from "./contexts/AuthProvider";
 import ProtectedRoutes from "./components/Routes/ProtectedRoutes";
 
@@ -20,6 +21,7 @@ function App() {
           <Route element={<ProtectedRoutes />}>
             <Route path="tasks" element={<Tasks />} />
           </Route>
+          <Route path="*" element={<PageNotFound />} />
         </Route>
       </Routes>
     </AuthProvider>
