@@ -59,7 +59,10 @@ const useApiRequest = () => {
         setData(null);
         return {
           success: false,
-          error: { code: null, message: "Erro na requisição" },
+          error: {
+            code: null,
+            message: "Erro na requisição, tente novamente mais tarde",
+          },
         };
       } finally {
         setLoading(false);

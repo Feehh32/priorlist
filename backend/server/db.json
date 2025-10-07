@@ -27,102 +27,6 @@
   ],
   "tasks": [
     {
-      "userId": "xwhqNAN",
-      "title": "Fazer entrevista ",
-      "description": "Aula do humberto - Entrevistado será o Fabio embora ele não saiba",
-      "deadline": "2025-10-10",
-      "priority": "high",
-      "completed": false,
-      "archived": false,
-      "createdAt": "2025-09-26T23:57:45.696Z",
-      "updatedAt": "2025-09-26T23:57:45.696Z",
-      "id": 1
-    },
-    {
-      "userId": "e194",
-      "title": "criar o input de busca",
-      "description": "trabalha na funcionalidade, visual ja esta pronto",
-      "deadline": "2025-09-25",
-      "priority": "medium",
-      "completed": true,
-      "archived": true,
-      "createdAt": "2025-09-25T22:22:41.573Z",
-      "updatedAt": "2025-09-26T00:56:33.224Z",
-      "id": 1
-    },
-    {
-      "userId": "e194",
-      "title": "criar title dinamico",
-      "description": "",
-      "deadline": "2025-09-25",
-      "priority": "medium",
-      "completed": true,
-      "archived": true,
-      "createdAt": "2025-09-25T22:23:21.939Z",
-      "updatedAt": "2025-09-29T18:27:14.447Z",
-      "id": 2
-    },
-    {
-      "userId": "e194",
-      "title": "implementar loading em nova tarefa, excluir, e editar",
-      "description": "",
-      "deadline": "2025-09-25",
-      "priority": "medium",
-      "completed": true,
-      "archived": true,
-      "createdAt": "2025-09-26T01:06:57.626Z",
-      "updatedAt": "2025-09-26T22:48:09.250Z",
-      "id": 6
-    },
-    {
-      "userId": "e194",
-      "title": "aplicar filtro de tarefas",
-      "description": "filtrar a ordem por prioridade",
-      "deadline": "2025-09-25",
-      "priority": "low",
-      "completed": true,
-      "archived": true,
-      "createdAt": "2025-09-26T01:07:47.152Z",
-      "updatedAt": "2025-10-02T01:18:16.892Z",
-      "id": 7
-    },
-    {
-      "userId": "e194",
-      "title": "consertar o bug do menu de tarefas mobile",
-      "description": "esta fechando quando eu clico dentro dele, seja editar ou excluir",
-      "deadline": "2025-09-30",
-      "priority": "low",
-      "completed": true,
-      "archived": true,
-      "createdAt": "2025-10-01T00:55:10.522Z",
-      "updatedAt": "2025-10-02T18:07:28.966Z",
-      "id": 8
-    },
-    {
-      "userId": "e194",
-      "title": "Criar pagina 404",
-      "description": "",
-      "deadline": "2025-10-02",
-      "priority": "high",
-      "completed": true,
-      "archived": true,
-      "createdAt": "2025-10-02T17:52:23.935Z",
-      "updatedAt": "2025-10-05T03:13:50.121Z",
-      "id": 10
-    },
-    {
-      "userId": "e194",
-      "title": "a",
-      "description": "",
-      "deadline": "",
-      "priority": "low",
-      "completed": false,
-      "archived": false,
-      "createdAt": "2025-10-03T01:36:57.153Z",
-      "updatedAt": "2025-10-03T01:36:57.153Z",
-      "id": 11
-    },
-    {
       "userId": "e194",
       "title": "b",
       "description": "",
@@ -130,9 +34,57 @@
       "priority": "medium",
       "completed": false,
       "archived": false,
-      "createdAt": "2025-10-03T01:37:00.736Z",
-      "updatedAt": "2025-10-03T01:37:00.736Z",
-      "id": 12
+      "createdAt": "2025-10-07T00:19:31.477Z",
+      "updatedAt": "2025-10-07T01:13:04.751Z",
+      "id": 4
+    },
+    {
+      "userId": "e194",
+      "title": "c",
+      "description": "",
+      "deadline": "",
+      "priority": "high",
+      "completed": false,
+      "archived": false,
+      "createdAt": "2025-10-07T00:20:25.395Z",
+      "updatedAt": "2025-10-07T00:20:25.395Z",
+      "id": 5
+    },
+    {
+      "userId": "e194",
+      "title": "consertar container na página sobre",
+      "description": "",
+      "deadline": "2025-10-07",
+      "priority": "high",
+      "completed": false,
+      "archived": false,
+      "createdAt": "2025-10-07T01:20:10.083Z",
+      "updatedAt": "2025-10-07T01:20:10.083Z",
+      "id": 6
+    },
+    {
+      "userId": "e194",
+      "title": "criar caixa de confirmação",
+      "description": "Criar uma caixa de confirmação seja usando, alert ou window.confirm, ou algo criado do zero, para perguntar ao usuario se ele quer mesmo excluir a tarefa",
+      "deadline": "2025-10-07",
+      "priority": "high",
+      "completed": false,
+      "archived": false,
+      "createdAt": "2025-10-07T01:27:38.336Z",
+      "updatedAt": "2025-10-07T01:27:38.336Z",
+      "id": 7
+    },
+    {
+      "userId": "e194",
+      "title": "consertar data de prazo ",
+      "description": "",
+      "deadline": "2025-10-06",
+      "priority": "high",
+      "completed": false,
+      "archived": false,
+      "createdAt": "2025-10-07T01:29:29.049Z",
+      "updatedAt": "2025-10-07T01:29:29.049Z",
+      "id": 8
     }
   ]
 }
