@@ -10,6 +10,7 @@ import handleApiError from "../utils/taskApiErrors";
 import { AuthContext } from "../contexts/AuthContext";
 import { useContext } from "react";
 import TaskSortMenu from "../components/tasks/TaskSortMenu";
+import PageTransition from "../components/pageTransition/PageTransition";
 
 const Tasks = () => {
   const [showModal, setShowModal] = useState(false);
@@ -177,78 +178,80 @@ const Tasks = () => {
   };
 
   return (
-    <section className="relative min-h-screen px-4 md:px-16 py-8 md:py-16">
-      <h1 className="text-2xl md:text-6xl text-primary font-secondary font-semibold text-center">
-        Suas Tarefas
-      </h1>
-      <section className="flex flex-col items-center mt-8 md:mt-16 gap-4 w-full">
-        <div className="w-full max-w-4xl flex justify-between flex-col md:flex-row">
-          <div className="relative md:mb-0 mb-4">
-            <MdSearch
-              className="absolute md:right-4 top-1/2 md:top-1/3 transform -translate-y-1/2 right-4 text-primary opacity-70"
-              size={20}
-            />
-            <input
-              onChange={handleChangeSearch}
-              type="search"
-              aria-label="Buscar tarefas"
-              placeholder="Digite para pesquisar..."
-              className="search-input w-full md:min-w-md border border-input-border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-primary/40"
-            />
-          </div>
-          <TaskSortMenu handleSortOptions={handleSortChange} />
-          <button
-            type="button"
-            className="bg-primary text-white px-4 py-2 rounded-lg shadow hover:bg-primary/90 transition cursor-pointer md:self-start"
-            onClick={() => {
-              setShowModal(true);
-              setModalMode("create");
-              setTaskToEdit(null);
-            }}
-          >
-            + Nova Tarefa
-          </button>
-        </div>
-        <div className="md:bg-white rounded-2xl md:p-12 md:shadow-md mt-2 md:max-w-4xl w-full ">
-          {filteredTasks?.length === 0 && searchTerm ? (
-            <p className="flex items-center justify-center text-secondary font-semibold md:text-lg font-secondary text-center">
-              Nenhuma tarefa encontrada com o termo "{searchTerm}"
-            </p>
-          ) : (
-            <TaskList
-              tasks={searchTerm ? filteredTasks : tasks}
-              onDelete={deleteTask}
-              onClearCompleted={clearCompleted}
-              onEdit={(task) => {
-                setModalMode("edit");
-                setTaskToEdit(task);
+    <PageTransition>
+      <section className="relative min-h-screen px-4 md:px-16 py-8 md:py-16">
+        <h1 className="text-2xl md:text-6xl text-primary font-secondary font-semibold text-center">
+          Suas Tarefas
+        </h1>
+        <section className="flex flex-col items-center mt-8 md:mt-16 gap-4 w-full">
+          <div className="w-full max-w-4xl flex justify-between flex-col md:flex-row">
+            <div className="relative md:mb-0 mb-4">
+              <MdSearch
+                className="absolute md:right-4 top-1/2 md:top-1/3 transform -translate-y-1/2 right-4 text-primary opacity-70"
+                size={20}
+              />
+              <input
+                onChange={handleChangeSearch}
+                type="search"
+                aria-label="Buscar tarefas"
+                placeholder="Digite para pesquisar..."
+                className="search-input w-full md:min-w-md border border-input-border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-primary/40"
+              />
+            </div>
+            <TaskSortMenu handleSortOptions={handleSortChange} />
+            <button
+              type="button"
+              className="bg-primary text-white px-4 py-2 rounded-lg shadow hover:bg-primary/90 transition cursor-pointer md:self-start"
+              onClick={() => {
                 setShowModal(true);
+                setModalMode("create");
+                setTaskToEdit(null);
               }}
+            >
+              + Nova Tarefa
+            </button>
+          </div>
+          <div className="md:bg-white rounded-2xl md:p-12 md:shadow-md mt-2 md:max-w-4xl w-full ">
+            {filteredTasks?.length === 0 && searchTerm ? (
+              <p className="flex items-center justify-center text-secondary font-semibold md:text-lg font-secondary text-center">
+                Nenhuma tarefa encontrada com o termo "{searchTerm}"
+              </p>
+            ) : (
+              <TaskList
+                tasks={searchTerm ? filteredTasks : tasks}
+                onDelete={deleteTask}
+                onClearCompleted={clearCompleted}
+                onEdit={(task) => {
+                  setModalMode("edit");
+                  setTaskToEdit(task);
+                  setShowModal(true);
+                }}
+              />
+            )}
+          </div>
+        </section>
+        <div className="fixed bottom-6 w-full md:w-auto left-1/2 -translate-x-1/2 flex flex-col gap-2 z-50">
+          {toasts.map((toast) => (
+            <ToastMsg
+              key={toast.id}
+              message={toast.message}
+              type={toast.type}
+              onClose={() => handleToastClose(toast.id)}
             />
-          )}
+          ))}
         </div>
-      </section>
-      <div className="fixed bottom-6 w-full md:w-auto left-1/2 -translate-x-1/2 flex flex-col gap-2 z-50">
-        {toasts.map((toast) => (
-          <ToastMsg
-            key={toast.id}
-            message={toast.message}
-            type={toast.type}
-            onClose={() => handleToastClose(toast.id)}
+        <Modal isOpen={showModal} onClose={() => setShowModal(false)}>
+          <h2 className="text-xl font-semibold mb-4 text-primary">
+            {modalMode === "create" ? "Criar Nova Tarefa" : "Editar Tarefa"}
+          </h2>
+          <TaskForm
+            onSubmit={modalMode === "create" ? addTask : updateTask}
+            modalMode={modalMode}
+            taskToEdit={taskToEdit}
           />
-        ))}
-      </div>
-      <Modal isOpen={showModal} onClose={() => setShowModal(false)}>
-        <h2 className="text-xl font-semibold mb-4 text-primary">
-          {modalMode === "create" ? "Criar Nova Tarefa" : "Editar Tarefa"}
-        </h2>
-        <TaskForm
-          onSubmit={modalMode === "create" ? addTask : updateTask}
-          modalMode={modalMode}
-          taskToEdit={taskToEdit}
-        />
-      </Modal>
-    </section>
+        </Modal>
+      </section>
+    </PageTransition>
   );
 };
 

@@ -2,28 +2,39 @@ import { useState, useRef } from "react";
 import { MdMoreVert, MdEdit } from "react-icons/md";
 import { FaTrash } from "react-icons/fa";
 import PropTypes from "prop-types";
-import { createPortal } from "react-dom";
 import useOutsideClick from "../../hooks/useOutsideClick";
+// eslint-disable-next-line no-unused-vars
+import { motion, AnimatePresence } from "framer-motion";
+
+const menuVariants = {
+  hidden: { opacity: 0, y: -10, scale: 0.95, originX: 1, originY: 0 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    scale: 1,
+    originX: 1,
+    originY: 0,
+    transition: { duration: 0.15, ease: [0.4, 0, 0.2, 1] },
+  },
+  exit: {
+    opacity: 0,
+    y: -10,
+    scale: 0.95,
+    originX: 1,
+    originY: 0,
+    transition: { duration: 0.12, ease: [0.4, 0, 0.2, 1] },
+  },
+};
 
 const TaskActions = ({ task, onEdit, onDelete }) => {
   const [isOpen, setIsOpen] = useState(false);
-  const buttonRef = useRef(null);
   const menuRef = useRef(null);
-  const portalRef = useRef(null);
-  const [coords, setCoords] = useState({ top: 0, left: 0 });
 
   const handleToogle = () => {
-    if (buttonRef.current) {
-      const rect = buttonRef.current.getBoundingClientRect();
-      setCoords({
-        top: rect.bottom + window.scrollY + 5,
-        left: rect.left - 150 + window.scrollX,
-      });
-    }
     setIsOpen((prev) => !prev);
   };
 
-  useOutsideClick([menuRef, portalRef], () => setIsOpen(false));
+  useOutsideClick(menuRef, () => setIsOpen(false));
 
   return (
     <div className="relative flex items-center gap-2">
@@ -50,16 +61,17 @@ const TaskActions = ({ task, onEdit, onDelete }) => {
 
       {/* Direct actions on mobile */}
       <div className="md:hidden relative" ref={menuRef}>
-        <button onClick={handleToogle} ref={buttonRef}>
+        <button onClick={handleToogle}>
           <MdMoreVert size={20} />
         </button>
-
-        {isOpen &&
-          createPortal(
-            <ul
-              className="absolute w-40 bg-white shadow-md rounded-md z-50"
-              style={{ top: coords.top, left: coords.left }}
-              ref={portalRef}
+        <AnimatePresence>
+          {isOpen && (
+            <motion.ul
+              variants={menuVariants}
+              initial="hidden"
+              animate="visible"
+              exit="exit"
+              className="absolute top-8 right-0 w-40 bg-white shadow-md rounded-md z-50"
             >
               <li className="border-b border-gray-200">
                 <button
@@ -88,9 +100,9 @@ const TaskActions = ({ task, onEdit, onDelete }) => {
                   Excluir
                 </button>
               </li>
-            </ul>,
-            document.body
+            </motion.ul>
           )}
+        </AnimatePresence>
       </div>
     </div>
   );

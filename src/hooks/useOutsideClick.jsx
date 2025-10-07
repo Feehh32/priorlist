@@ -1,36 +1,16 @@
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
 
-/**
- * useOutsideClick(refOrRefs, handler)
- * - refOrRefs: single ref OR array of refs (each ref should be created with useRef)
- * - handler: function to call when a click/touch happens outside all provided refs
- */
-export default function useOutsideClick(refOrRefs, handler) {
-  const handlerRef = useRef(handler);
+const useOutsideClick = (ref, callback) => {
   useEffect(() => {
-    handlerRef.current = handler;
-  }, [handler]);
-
-  useEffect(() => {
-    const refs = Array.isArray(refOrRefs) ? refOrRefs : [refOrRefs];
-
-    function onPointer(e) {
-      const clickedInside = refs.some((ref) => {
-        const element = ref && ref.current;
-        return element && element.contains(e.target);
-      });
-
-      if (!clickedInside) {
-        handlerRef.current(e);
+    const handleClick = (event) => {
+      if (ref.current && !ref.current.contains(event.target)) {
+        callback();
       }
-    }
-
-    document.addEventListener("mousedown", onPointer);
-    document.addEventListener("touchstart", onPointer);
-
-    return () => {
-      document.removeEventListener("mousedown", onPointer);
-      document.removeEventListener("touchstart", onPointer);
     };
-  }, [refOrRefs]);
-}
+
+    document.addEventListener("mousedown", handleClick);
+    return () => document.removeEventListener("mousedown", handleClick);
+  }, [ref, callback]);
+};
+
+export default useOutsideClick;
