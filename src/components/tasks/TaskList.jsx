@@ -3,8 +3,7 @@ import { MdCalendarMonth } from "react-icons/md";
 import { MdOutlineCheck } from "react-icons/md";
 import { MdDeleteForever } from "react-icons/md";
 import TaskActions from "./TaskActions";
-import useApiRequest from "../../hooks/useApiRequest";
-import { useState, useEffect } from "react";
+
 // eslint-disable-next-line no-unused-vars
 import { AnimatePresence, motion } from "framer-motion";
 
@@ -20,6 +19,11 @@ const priorityColor = {
   high: "text-red-500",
 };
 
+// Used for screen readers
+const VisuallyHidden = ({ children }) => (
+  <span className="sr-only">{children}</span>
+);
+
 //Animation cards variants
 const cardVariants = {
   hidden: { opacity: 0, y: 20 },
@@ -33,64 +37,46 @@ const buttonHoverTap = {
   whileTap: { scale: 0.95 },
 };
 
-const TaskList = ({ tasks, onEdit, onDelete, onClearCompleted }) => {
-  const { request } = useApiRequest();
-  const [stateTasks, setStateTasks] = useState(tasks);
-
-  // Update state when tasks change
-  useEffect(() => setStateTasks(tasks), [tasks]);
-
+const TaskList = ({
+  tasks,
+  onEdit,
+  onClearCompleted,
+  onDeleteRequest,
+  onStatusUpdate,
+}) => {
   // Mark as completed (only style change)
-  const handleComplete = async (taskId) => {
-    const task = stateTasks.find((task) => task.id === taskId);
-
-    const response = await request(`tasks/${taskId}`, "PATCH", {
+  const handleComplete = async (task) => {
+    onStatusUpdate({
+      ...task,
       completed: !task.completed,
       updatedAt: new Date().toISOString(),
     });
-
-    if (response && !response.error) {
-      setStateTasks((prev) =>
-        prev.map((task) => (task.id === response.id ? response : task))
-      );
-    }
   };
 
   // Initiate removal animation
-  const handleRemove = (taskId) => {
-    setStateTasks((prev) =>
-      prev.map((task) =>
-        task.id === taskId ? { ...task, archived: true } : task
-      )
-    );
-
-    setTimeout(async () => {
-      const response = await request(`tasks/${taskId}`, "PATCH", {
-        archived: true,
-      });
-      if (response && !response.error) {
-        setStateTasks((prev) =>
-          prev.map((t) => (t.id === response.id ? response : t))
-        );
-      }
-    }, 300);
+  const handleRemove = (task) => {
+    onStatusUpdate({
+      ...task,
+      archived: true,
+      updatedAt: new Date().toISOString(),
+    });
   };
 
   // Delete all tasks in completed tasks
-  const mainTasks = stateTasks.filter((task) => !task.archived);
-  const completedTasks = stateTasks.filter((task) => task.archived);
+  const mainTasks = tasks.filter((task) => !task.archived);
+  const completedTasks = tasks.filter((task) => task.archived);
 
   return mainTasks.length === 0 && completedTasks.length === 0 ? (
     <p className="flex items-center justify-center text-secondary font-semibold md:text-lg font-secondary text-center before:content-[''] before:w-1 before:h-10 before:md:h-6">
       Você ainda não tem tarefas. Clique em + Nova Tarefa para começar!
     </p>
   ) : (
-    <div className="grid md:gap-6 gap-2 max-w-4xl">
+    <ul className="grid md:gap-6 gap-2 max-w-4xl">
       <AnimatePresence>
         {mainTasks.map((task) => {
           const priority = task.priority.toLowerCase();
           return (
-            <motion.div
+            <motion.li
               key={task.id}
               variants={cardVariants}
               initial="hidden"
@@ -101,7 +87,7 @@ const TaskList = ({ tasks, onEdit, onDelete, onClearCompleted }) => {
                 task.completed ? "bg-gray-300" : priorityGradient[priority]
               }`}
             >
-              <div className="flex justify-between items-start">
+              <div className="flex gap-4 justify-between items-start">
                 <div>
                   <h3
                     className={` text-lg md:text-xl font-secondary font-semibold ${
@@ -109,9 +95,16 @@ const TaskList = ({ tasks, onEdit, onDelete, onClearCompleted }) => {
                         ? "line-through text-secondary"
                         : priorityColor[priority]
                     }`}
+                    aria-label={`${task.title}. Prioridade: ${
+                      priority.charAt(0).toUpperCase() + priority.slice(1)
+                    }. ${task.completed ? "Concluída" : "Pendente"}`}
                   >
                     {task.title}
                   </h3>
+                  <VisuallyHidden>
+                    {task.completed ? " - Concluída" : ""}
+                    {` - Prioridade ${priority}`}
+                  </VisuallyHidden>
                   <p className="text-text-main mt-2">{task.description}</p>
                 </div>
                 <div className="flex items-center gap-4 md:flex-row flex-col">
@@ -119,12 +112,16 @@ const TaskList = ({ tasks, onEdit, onDelete, onClearCompleted }) => {
                     {...buttonHoverTap}
                     className={`${
                       task.completed ? "bg-green-500" : "bg-primary"
-                    }  text-white text-sm rounded-md md:px-2 px-4 py-1 ${
+                    }  text-white   ${
                       task.completed ? "" : "hover:bg-blue-500"
-                    } cursor-pointer flex items-center gap-2 shadow-md`}
-                    onClick={() => handleComplete(task.id)}
+                    } cursor-pointer flex items-center gap-2 shadow-md md:px-2 px-4 py-1 text-sm rounded-md`}
+                    onClick={() => handleComplete(task)}
                   >
-                    <MdOutlineCheck size={20} color="white" />
+                    <MdOutlineCheck
+                      size={20}
+                      color="white"
+                      aria-hidden="true"
+                    />
                     <span className="md:block hidden">
                       {task.completed ? "Concluído" : "Concluir"}
                     </span>
@@ -136,75 +133,92 @@ const TaskList = ({ tasks, onEdit, onDelete, onClearCompleted }) => {
                         ? "bg-red-500 hover:bg-red-600"
                         : "bg-gray-500"
                     } text-white text-sm rounded-md md:px-2 px-4 py-1 cursor-pointer flex items-center gap-2 shadow-md`}
-                    onClick={() => handleRemove(task.id)}
+                    onClick={() => handleRemove(task)}
                     disabled={!task.completed}
+                    aria-label={
+                      task.completed
+                        ? `Arquivar a tarefa: ${task.title}`
+                        : `Conclua a tarefa para habilitar o arquivamento`
+                    }
                   >
-                    <MdDeleteForever size={20} color="white" />
+                    <MdDeleteForever
+                      size={20}
+                      color="white"
+                      aria-hidden="true"
+                    />
                     <span className="md:block hidden">Remover</span>
                   </motion.button>
                 </div>
               </div>
               <div className="flex items-center justify-between gap-2 text-sm text-secondary mt-4 border-t border-gray-200 pt-4 ">
                 <div className="flex items-center gap-2">
-                  <MdCalendarMonth size={16} />
-                  <span>
+                  <MdCalendarMonth size={16} aria-hidden="true" />
+                  <span aria-live="polite">
                     {task.deadline
-                      ? new Date(task.deadline).toLocaleDateString("pt-BR")
+                      ? new Date(
+                          task.deadline + "T00:00:00"
+                        ).toLocaleDateString("pt-BR", { timeZone: "UTC" })
                       : "sem prazo limite"}
                   </span>
                   <p className="font-secondary text-xs self-end">
                     {task.deadline && " - prazo limite"}
                   </p>
                 </div>
-                <TaskActions task={task} onEdit={onEdit} onDelete={onDelete} />
+                <TaskActions
+                  task={task}
+                  onEdit={onEdit}
+                  onDeleteRequest={onDeleteRequest}
+                />
               </div>
-            </motion.div>
+            </motion.li>
           );
         })}
       </AnimatePresence>
 
-      {/*list of completed tasks  */}
+      {/*list of archived tasks  */}
       {completedTasks.length > 0 && (
-        <>
-          <h4 className="text-primary font-semibold md:text-2xl font-secondary text-center mt-8">
-            Tarefas Concluídas
+        <div className="w-full grid grid-cols-1 justify-center">
+          <h4 className="text-primary font-semibold md:text-2xl font-secondary text-center mt-8 mb-4">
+            Tarefas Arquivadas
           </h4>
-          <AnimatePresence>
-            {completedTasks.map((task) => (
-              <motion.div
-                variants={cardVariants}
-                initial="hidden"
-                animate="visible"
-                exit="exit"
-                layout
-                key={task.id}
-                className=" w-full p-4 rounded-lg shadow-md hover:shadow-lg bg-gradient-to-r bg-gray-300"
-              >
-                <div className="md:flex justify-between items-center">
-                  <h3 className=" text-lg md:text-xl font-secondary font-semibold text-secondary">
-                    {task.title}
-                  </h3>
-                  {task.updatedAt && (
-                    <span className="text-sm text-secondary">
-                      {`Finalizado em ${new Date(
-                        task.updatedAt
-                      ).toLocaleDateString("pt-BR")}`}
-                    </span>
-                  )}
-                </div>
-              </motion.div>
-            ))}
-          </AnimatePresence>
+          <ul className="grid md:gap-6 gap-2">
+            <AnimatePresence>
+              {completedTasks.map((task) => (
+                <motion.li
+                  variants={cardVariants}
+                  initial="hidden"
+                  animate="visible"
+                  exit="exit"
+                  layout
+                  key={task.id}
+                  className=" w-full p-4 rounded-lg shadow-md hover:shadow-lg bg-gradient-to-r bg-gray-300"
+                >
+                  <div className="md:flex gap-4 justify-between items-center">
+                    <h3 className=" text-lg md:text-xl font-secondary font-semibold text-secondary">
+                      {task.title}
+                    </h3>
+                    {task.updatedAt && (
+                      <span className="text-sm text-secondary min-w-3xs text-right">
+                        {`Finalizado em ${new Date(
+                          task.updatedAt
+                        ).toLocaleDateString("pt-BR")}`}
+                      </span>
+                    )}
+                  </div>
+                </motion.li>
+              ))}
+            </AnimatePresence>
+          </ul>
           <motion.button
             {...buttonHoverTap}
-            className="text-sm text-secondary mt-4 hover:text-primary cursor-pointer"
+            className="text-sm text-secondary mt-4 hover:text-primary cursor-pointer max-w-fit m-auto"
             onClick={() => onClearCompleted(completedTasks)}
           >
-            Deletar todas as tarefas concluídas
+            Deletar todas as tarefas arquivadas
           </motion.button>
-        </>
+        </div>
       )}
-    </div>
+    </ul>
   );
 };
 

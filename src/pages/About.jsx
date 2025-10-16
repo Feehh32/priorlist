@@ -10,7 +10,7 @@ const About = () => {
 
   return (
     <PageTransition>
-      <section className="relative min-h-screen md:flex justify-center px-8 md:px-0">
+      <section className="relative min-h-screen md:flex justify-center px-4 md:px-0">
         <div className="w-full h-full ">
           <h1 className="text-3xl md:text-6xl font-secondary text-align-center font-semibold text-primary mb-6 mt-8 text-center ">
             Sobre o Priorlist
@@ -21,6 +21,7 @@ const About = () => {
             fill="none"
             xmlns="http://www.w3.org/2000/svg"
             preserveAspectRatio="none"
+            aria-hidden="true"
           >
             <path
               d="M0 300C200 400 400 200 800 300V600H0V300Z"
@@ -33,8 +34,8 @@ const About = () => {
           </svg>
         </div>
 
-        <section className="max-w-3xl bg-white/80 shadow-md rounded-2xl p-8 md:absolute md:top-1/4">
-          <h2 className="text-2xl md:text-3xl font-medium text-primary mb-6 mt-16 md:mt-0">
+        <section className=" max-w-3xl bg-white/80 shadow-md rounded-2xl py-6 px-4 md:p-8 md:absolute md:top-1/4">
+          <h2 className="text-2xl md:text-3xl font-medium text-primary mb-6">
             Produtividade simplificada
           </h2>
 

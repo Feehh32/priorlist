@@ -1,27 +1,30 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useContext } from "react";
 import { MdSearch } from "react-icons/md";
+import { AuthContext } from "../contexts/AuthContext";
 import TaskForm from "../components/taskForm/TaskForm";
 import TaskList from "../components/tasks/TaskList";
 import Modal from "../components/modal/Modal";
-import Spinner from "../components/UI/spinner";
 import ToastMsg from "../components/notifications/ToastMsg";
-import useApiRequest from "../hooks/useApiRequest";
-import handleApiError from "../utils/taskApiErrors";
-import { AuthContext } from "../contexts/AuthContext";
-import { useContext } from "react";
 import TaskSortMenu from "../components/tasks/TaskSortMenu";
 import PageTransition from "../components/pageTransition/PageTransition";
+import ConfirmDeleteModal from "../components/tasks/ConfirmDeleteModal";
+import useApiRequest from "../hooks/useApiRequest";
+import handleApiError from "../utils/taskApiErrors";
 
 const Tasks = () => {
   const [showModal, setShowModal] = useState(false);
   const [modalMode, setModalMode] = useState("create");
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [taskToDelete, setTaskToDelete] = useState(null);
   const [taskToEdit, setTaskToEdit] = useState(null);
   const [tasks, setTasks] = useState([]);
   const [toasts, setToasts] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
-  const { request, loading } = useApiRequest();
+  const { request } = useApiRequest();
   const { user } = useContext(AuthContext);
   const originalTaskRef = useRef([]);
+
+  const modalTitleId = "task-modal-title";
 
   // dinamic title
   useEffect(() => {
@@ -44,13 +47,6 @@ const Tasks = () => {
     fetchTasks();
   }, [request, user.id]);
 
-  if (loading)
-    return (
-      <div className="flex items-center justify-center h-screen">
-        <Spinner />
-      </div>
-    );
-
   // Function to add a new toast message
   const addToast = (message, type = "success") => {
     const id = Date.now();
@@ -64,8 +60,10 @@ const Tasks = () => {
     handleApiError(response.error, addToast);
     if (response && !response.error) {
       addToast("Tarefa criada com sucesso!", "success");
-      setTasks((prev) => [...prev, response]);
+      const updatedOriginalTasks = [...originalTaskRef.current, response];
       originalTaskRef.current = [...originalTaskRef.current, response];
+      const saverdOrder = localStorage.getItem("sortOption") || "default";
+      handleSortChange(saverdOrder, updatedOriginalTasks);
       setShowModal(false);
     }
     setShowModal(false);
@@ -83,13 +81,15 @@ const Tasks = () => {
     handleApiError(response.error, addToast);
     if (response && !response.error) {
       addToast("Tarefa atualizada com sucesso!", "update");
-      setTasks((prev) =>
-        prev.map((task) => (task.id === response.id ? response : task))
-      );
 
-      originalTaskRef.current = originalTaskRef.current.map((task) =>
+      const updatedOriginalTasks = originalTaskRef.current.map((task) =>
         task.id === response.id ? response : task
       );
+      originalTaskRef.current = updatedOriginalTasks;
+
+      const saverdOrder = localStorage.getItem("sortOption") || "default";
+      handleSortChange(saverdOrder, updatedOriginalTasks);
+
       setShowModal(false);
       return true;
     }
@@ -97,27 +97,59 @@ const Tasks = () => {
     return false;
   };
 
-  // Function to delete a task and update the list
-  const deleteTask = async (taskId, showToast = true) => {
-    const response = await request(`tasks/${taskId}`, "DELETE");
+  // Function to handle the status update (completed/archived) of Tasklist
+  const handleStatusUpdate = async (taskToUpdate) => {
+    const response = await request(
+      `tasks/${taskToUpdate.id}`,
+      "PATCH",
+      taskToUpdate
+    );
 
     handleApiError(response.error, addToast);
     if (response && !response.error) {
-      if (showToast) addToast("Tarefa deletada com sucesso!", "success");
-      setTasks((prev) => prev.filter((task) => task.id !== taskId));
+      setTasks((prev) =>
+        prev.map((task) => (task.id === response.id ? response : task))
+      );
 
+      originalTaskRef.current = originalTaskRef.current.map((task) =>
+        task.id === response.id ? response : task
+      );
+      return true;
+    }
+    return false;
+  };
+
+  // All 3 functions below are used to delete a task and update the list
+  const handleDeleteRequest = (taskId) => {
+    setTaskToDelete(taskId);
+    setShowDeleteModal(true);
+  };
+
+  const handleDeleteConfirm = async (confirmed) => {
+    if (confirmed && taskToDelete) {
+      await deleteTask(taskToDelete);
+    }
+    setShowDeleteModal(false);
+    setTaskToDelete(null);
+  };
+
+  const deleteTask = async (task, showToast = true) => {
+    const response = await request(`tasks/${task.id}`, "DELETE");
+    handleApiError(response.error, addToast);
+    if (response && !response.error) {
+      if (showToast) addToast("Tarefa deletada com sucesso!", "success");
+      setTasks((prev) => prev.filter((t) => t.id !== task.id));
       originalTaskRef.current = originalTaskRef.current.filter(
-        (task) => task.id !== taskId
+        (t) => t.id !== task.id
       );
     }
-
     return response;
   };
 
   // Function to delete all tasks marked as completed
   const clearCompleted = async (completedTasks) => {
     const responses = await Promise.all(
-      completedTasks.map((task) => deleteTask(task.id, false))
+      completedTasks.map((task) => deleteTask(task, false))
     );
 
     const anyError = responses.some((res) => res?.error);
@@ -146,8 +178,10 @@ const Tasks = () => {
       .trim();
 
   // Filter tasks by title when user search something
-  const filteredTasks = tasks.filter((task) =>
-    normalizeString(task.title).includes(normalizeString(searchTerm))
+  const filteredTasks = tasks.filter(
+    (task) =>
+      normalizeString(task.title).includes(normalizeString(searchTerm)) &&
+      task.archived === false
   );
 
   // Function to handle task sorting options
@@ -211,7 +245,10 @@ const Tasks = () => {
               + Nova Tarefa
             </button>
           </div>
-          <div className="md:bg-white rounded-2xl md:p-12 md:shadow-md mt-2 md:max-w-4xl w-full ">
+          <div
+            className="md:bg-white rounded-2xl md:p-12 md:shadow-md mt-2 md:max-w-4xl w-full"
+            aria-live="polite"
+          >
             {filteredTasks?.length === 0 && searchTerm ? (
               <p className="flex items-center justify-center text-secondary font-semibold md:text-lg font-secondary text-center">
                 Nenhuma tarefa encontrada com o termo "{searchTerm}"
@@ -219,18 +256,23 @@ const Tasks = () => {
             ) : (
               <TaskList
                 tasks={searchTerm ? filteredTasks : tasks}
-                onDelete={deleteTask}
+                onDeleteRequest={handleDeleteRequest}
                 onClearCompleted={clearCompleted}
+                setShowDeleteModal={setShowDeleteModal}
                 onEdit={(task) => {
                   setModalMode("edit");
                   setTaskToEdit(task);
                   setShowModal(true);
                 }}
+                onStatusUpdate={handleStatusUpdate}
               />
             )}
           </div>
         </section>
-        <div className="fixed bottom-6 w-full md:w-auto left-1/2 -translate-x-1/2 flex flex-col gap-2 z-50">
+        <div
+          className="fixed bottom-6 w-full md:w-auto left-1/2 -translate-x-1/2 flex flex-col gap-2 z-50"
+          aria-live="polite"
+        >
           {toasts.map((toast) => (
             <ToastMsg
               key={toast.id}
@@ -240,8 +282,15 @@ const Tasks = () => {
             />
           ))}
         </div>
-        <Modal isOpen={showModal} onClose={() => setShowModal(false)}>
-          <h2 className="text-xl font-semibold mb-4 text-primary">
+        <Modal
+          isOpen={showModal}
+          onClose={() => setShowModal(false)}
+          titleId={modalTitleId}
+        >
+          <h2
+            className="text-xl font-semibold mb-4 text-primary"
+            id={modalTitleId}
+          >
             {modalMode === "create" ? "Criar Nova Tarefa" : "Editar Tarefa"}
           </h2>
           <TaskForm
@@ -250,6 +299,10 @@ const Tasks = () => {
             taskToEdit={taskToEdit}
           />
         </Modal>
+        <ConfirmDeleteModal
+          isOpen={showDeleteModal}
+          confirmDelete={handleDeleteConfirm}
+        />
       </section>
     </PageTransition>
   );

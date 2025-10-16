@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { MdMoreVert, MdEdit } from "react-icons/md";
 import { FaTrash } from "react-icons/fa";
 import PropTypes from "prop-types";
@@ -26,15 +26,31 @@ const menuVariants = {
   },
 };
 
-const TaskActions = ({ task, onEdit, onDelete }) => {
+const TaskActions = ({ task, onEdit, onDeleteRequest }) => {
   const [isOpen, setIsOpen] = useState(false);
   const menuRef = useRef(null);
+  const toggleButtonRef = useRef(null);
 
   const handleToogle = () => {
     setIsOpen((prev) => !prev);
   };
 
   useOutsideClick(menuRef, () => setIsOpen(false));
+
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const handleKeyDown = (e) => {
+      if (e.key === "Escape") {
+        e.stopPropagation();
+        setIsOpen(false);
+        toggleButtonRef.current?.focus();
+      }
+    };
+
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, [isOpen]);
 
   return (
     <div className="relative flex items-center gap-2">
@@ -47,22 +63,29 @@ const TaskActions = ({ task, onEdit, onDelete }) => {
           } flex items-center gap-1 px-3 py-1 text-sm text-secondary rounded-md hover:bg-primary hover:text-white transition cursor-pointer`}
           disabled={task.completed}
         >
-          <MdEdit size={16} />
+          <MdEdit size={16} aria-hidden="true" />
           Editar
         </button>
         <button
-          onClick={() => onDelete(task.id)}
+          onClick={() => onDeleteRequest(task)}
           className="flex items-center gap-1 px-3 py-1 text-sm text-secondary rounded-md hover:bg-primary hover:text-white transition cursor-pointer"
         >
-          <FaTrash size={16} />
+          <FaTrash size={16} aria-hidden="true" />
           Excluir
         </button>
       </div>
 
       {/* Direct actions on mobile */}
       <div className="md:hidden relative" ref={menuRef}>
-        <button onClick={handleToogle}>
-          <MdMoreVert size={20} />
+        <button
+          onClick={handleToogle}
+          ref={toggleButtonRef}
+          aria-label={`Mais ações para a tarefa ${task.title}`}
+          aria-expanded={isOpen}
+          aria-haspopup="menu"
+          className="flex items-center gap-1 p-1 text-sm rounded-full cursor-pointer focus:outline-secondary/50"
+        >
+          <MdMoreVert size={20} aria-hidden="true" />
         </button>
         <AnimatePresence>
           {isOpen && (
@@ -71,9 +94,10 @@ const TaskActions = ({ task, onEdit, onDelete }) => {
               initial="hidden"
               animate="visible"
               exit="exit"
+              role="menu"
               className="absolute top-8 right-0 w-40 bg-white shadow-md rounded-md z-50"
             >
-              <li className="border-b border-gray-200">
+              <li className="border-b border-gray-200" role="none">
                 <button
                   onClick={() => {
                     onEdit(task);
@@ -83,20 +107,30 @@ const TaskActions = ({ task, onEdit, onDelete }) => {
                     task.completed && "opacity-50"
                   } flex gap-2 items-center text-sm p-3 w-full text-left`}
                   disabled={task.completed}
+                  role="menuitem"
                 >
-                  <MdEdit size={16} className="text-secondary" />
+                  <MdEdit
+                    size={16}
+                    className="text-secondary"
+                    aria-hidden="true"
+                  />
                   Editar
                 </button>
               </li>
-              <li>
+              <li role="none">
                 <button
                   onClick={() => {
-                    onDelete(task.id);
+                    onDeleteRequest(task);
                     setIsOpen(false);
                   }}
                   className="flex gap-2 items-center text-sm p-3 w-full text-left"
+                  role="menuitem"
                 >
-                  <FaTrash size={16} className="text-secondary" />
+                  <FaTrash
+                    size={16}
+                    className="text-secondary"
+                    aria-hidden="true"
+                  />
                   Excluir
                 </button>
               </li>
@@ -111,7 +145,7 @@ const TaskActions = ({ task, onEdit, onDelete }) => {
 TaskActions.propTypes = {
   task: PropTypes.object.isRequired,
   onEdit: PropTypes.func.isRequired,
-  onDelete: PropTypes.func.isRequired,
+  onDeleteRequest: PropTypes.func.isRequired,
 };
 
 export default TaskActions;

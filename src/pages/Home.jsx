@@ -74,7 +74,7 @@ const Home = () => {
           className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-16 max-w-4xl mx-auto"
         >
           <div className="p-6 rounded-xl shadow-md bg-white hover:shadow-lg transition">
-            <h3 className="text-xl font-bold text-primary mb-2">✨ Simples</h3>
+            <h2 className="text-xl font-bold text-primary mb-2">✨ Simples</h2>
             <p className="text-gray-600 font-secondary">
               Interface direta e fácil de usar para organizar suas tarefas.
             </p>

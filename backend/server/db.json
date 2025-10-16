@@ -28,63 +28,15 @@
   "tasks": [
     {
       "userId": "e194",
-      "title": "b",
-      "description": "",
-      "deadline": "",
-      "priority": "medium",
-      "completed": false,
-      "archived": false,
-      "createdAt": "2025-10-07T00:19:31.477Z",
-      "updatedAt": "2025-10-07T01:13:04.751Z",
-      "id": 4
-    },
-    {
-      "userId": "e194",
-      "title": "c",
-      "description": "",
-      "deadline": "",
+      "title": "Começando o backend",
+      "description": "trabalhar agora no supabase",
+      "deadline": "2025-10-17",
       "priority": "high",
       "completed": false,
       "archived": false,
-      "createdAt": "2025-10-07T00:20:25.395Z",
-      "updatedAt": "2025-10-07T00:20:25.395Z",
-      "id": 5
-    },
-    {
-      "userId": "e194",
-      "title": "consertar container na página sobre",
-      "description": "",
-      "deadline": "2025-10-07",
-      "priority": "high",
-      "completed": false,
-      "archived": false,
-      "createdAt": "2025-10-07T01:20:10.083Z",
-      "updatedAt": "2025-10-07T01:20:10.083Z",
-      "id": 6
-    },
-    {
-      "userId": "e194",
-      "title": "criar caixa de confirmação",
-      "description": "Criar uma caixa de confirmação seja usando, alert ou window.confirm, ou algo criado do zero, para perguntar ao usuario se ele quer mesmo excluir a tarefa",
-      "deadline": "2025-10-07",
-      "priority": "high",
-      "completed": false,
-      "archived": false,
-      "createdAt": "2025-10-07T01:27:38.336Z",
-      "updatedAt": "2025-10-07T01:27:38.336Z",
-      "id": 7
-    },
-    {
-      "userId": "e194",
-      "title": "consertar data de prazo ",
-      "description": "",
-      "deadline": "2025-10-06",
-      "priority": "high",
-      "completed": false,
-      "archived": false,
-      "createdAt": "2025-10-07T01:29:29.049Z",
-      "updatedAt": "2025-10-07T01:29:29.049Z",
-      "id": 8
+      "createdAt": "2025-10-15T18:00:39.890Z",
+      "updatedAt": "2025-10-15T18:07:16.540Z",
+      "id": 3
     }
   ]
 }

@@ -63,7 +63,10 @@ const Register = () => {
     <PageTransition>
       <section className="min-h-screen flex justify-center items-center flex-col bg-gray-50 p-8 md:p-16">
         {success && (
-          <p className="text-green-500 text-sm text-center mb-2 p-2 bg-green-200 rounded-lg border border-green-300">
+          <p
+            className="text-green-500 text-sm text-center mb-2 p-2 bg-green-200 rounded-lg border border-green-300"
+            role="status"
+          >
             {success}
           </p>
         )}
@@ -75,9 +78,9 @@ const Register = () => {
           >
             Priorlist
           </Link>
-          <h2 className=" text-2xl md:text-3xl font-medium text-center text-secondary mb-8">
+          <h1 className=" text-2xl md:text-3xl font-medium text-center text-secondary mb-8">
             Crie aqui sua conta gratuitamente
-          </h2>
+          </h1>
           <form
             onSubmit={handleSubmit}
             className="px-8 pb-8 grid gap-4"
@@ -127,7 +130,9 @@ const Register = () => {
               {loading ? <Spinner color="border-gray-200" /> : "Registrar"}
             </button>
             {error && (
-              <p className="text-red-500 text-sm text-center">{error}</p>
+              <p className="text-red-500 text-sm text-center " role="alert">
+                {error}
+              </p>
             )}
             <p className="text-sm text-center text-gray-600">
               Já tem conta?{" "}
