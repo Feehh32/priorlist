@@ -5,7 +5,10 @@ const Menu = () => {
   const { user } = useContext(AuthContext);
 
   return (
-    <nav className="md:w-auto w-full mt-4 md:mt-0 order-2 md:order-0">
+    <nav
+      className="md:w-auto w-full mt-4 md:mt-0 order-2 md:order-0"
+      aria-label="Navegação Principal"
+    >
       <ul className="flex font-secondary justify-center font-semibold text-white  md:gap-4 gap-2 bg-[#1f56ce] md:bg-transparent w-full py-2 px-4">
         <li className="relative">
           <NavLink

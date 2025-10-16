@@ -18,6 +18,7 @@ const LogActions = () => {
       <button
         className=" md:hidden bg-clip-padding bg-[#3B82F6] rounded-full w-8 h-8 text-white font-secondary font-semibold flex items-center justify-center"
         onClick={handleLogout}
+        aria-label={`Sair da conta de ${user?.name}`}
       >
         {usernameInitials}
       </button>
@@ -26,7 +27,7 @@ const LogActions = () => {
       </p>
       <button onClick={handleLogout} className="cursor-pointer flex gap-2">
         <MdOutlineLogout color="white" size={20} />
-        <p className="text-white font-normal hidden md:block ">Sair</p>
+        <span className="text-white font-normal hidden md:block ">Sair</span>
       </button>
     </div>
   ) : (

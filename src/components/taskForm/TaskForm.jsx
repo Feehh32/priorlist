@@ -1,13 +1,15 @@
 import PropTypes from "prop-types";
 import FormInput from "../input/FormInput";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useState, useRef } from "react";
 import { AuthContext } from "../../contexts/AuthContext";
 import taskFormValidator from "../../utils/taskFormValidator";
+import Spinner from "../UI/spinner";
 
 const TaskForm = ({ onSubmit, modalMode, taskToEdit }) => {
   const { user } = useContext(AuthContext);
   const [formErrors, setFormErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const titleInputRef = useRef(null);
 
   const [formData, setFormData] = useState({
     userId: user.id,
@@ -29,6 +31,12 @@ const TaskForm = ({ onSubmit, modalMode, taskToEdit }) => {
       }));
     }
   }, [taskToEdit]);
+
+  useEffect(() => {
+    if (titleInputRef.current) {
+      titleInputRef.current.focus();
+    }
+  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -63,6 +71,7 @@ const TaskForm = ({ onSubmit, modalMode, taskToEdit }) => {
         value={formData.title}
         onChange={handleChange}
         error={formErrors.title}
+        ref={titleInputRef}
       />
       <label
         className="text-text-main font-semibold font-secondary block"
@@ -131,9 +140,18 @@ const TaskForm = ({ onSubmit, modalMode, taskToEdit }) => {
       <button
         type="submit"
         disabled={isSubmitting}
-        className="w-full bg-primary text-white font-semibold py-3 rounded-lg hover:bg-blue-700 transition-colors mt-2 cursor-pointer font-secondary shadow-md"
+        className="w-full bg-primary text-white font-semibold py-3 rounded-lg hover:bg-blue-700 transition-colors mt-2 cursor-pointer font-secondary shadow-md flex items-center justify-center"
       >
-        {modalMode === "create" ? "Criar Tarefa" : "Salvar Alterações"}
+        {isSubmitting ? (
+          <>
+            <Spinner color="border-white" />
+            <span className="sr-only">Enviando...</span>
+          </>
+        ) : modalMode === "create" ? (
+          "Criar Tarefa"
+        ) : (
+          "Salvar Alterações"
+        )}
       </button>
     </form>
   );

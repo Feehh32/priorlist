@@ -84,6 +84,7 @@ const Login = () => {
             viewBox="0 0 800 600"
             fill="none"
             xmlns="http://www.w3.org/2000/svg"
+            aria-hidden="true"
           >
             <path
               d="M0 300C200 400 400 200 800 300V600H0V300Z"
@@ -94,9 +95,9 @@ const Login = () => {
               fill="rgba(255,255,255,0.1)"
             />
           </svg>
-          <h1 className="text-white text-4xl font-secondary font-semibold max-w-md text-center relative z-10">
+          <h2 className="text-white text-4xl font-secondary font-semibold max-w-md text-center relative z-10">
             Organize suas tarefas de forma simples
-          </h1>
+          </h2>
         </motion.section>
         <motion.section
           variants={formVariants}
@@ -112,9 +113,9 @@ const Login = () => {
             >
               Priorlist
             </Link>
-            <h2 className=" text-2xl md:text-3xl font-medium text-center text-secondary mb-8">
+            <h1 className=" text-2xl md:text-3xl font-medium text-center text-secondary mb-8">
               Faça login na sua conta
-            </h2>
+            </h1>
             <form
               onSubmit={handleSubmit}
               className="px-8 pb-8 grid gap-4"
@@ -147,7 +148,9 @@ const Login = () => {
                 {loading ? <Spinner color="border-gray-200" /> : "Entrar"}
               </button>
               {error && (
-                <p className="text-red-500 text-sm text-center">{error}</p>
+                <p className="text-red-500 text-sm text-center" role="alert">
+                  {error}
+                </p>
               )}
               <p className="text-sm text-center text-gray-600">
                 Ainda nao tem conta?{" "}

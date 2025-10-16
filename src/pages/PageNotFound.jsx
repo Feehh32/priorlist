@@ -9,14 +9,18 @@ const PageNotFound = () => {
   return (
     <PageTransition>
       <div className="relative min-h-screen md:grid md:grid-cols-2">
-        <main className="flex-1 flex  items-center justify-center text-center p-6">
+        <main
+          className="flex-1 flex  items-center justify-center text-center p-6"
+          role="status"
+          tabIndex={-1}
+        >
           <div className="max-w-md mt-8 md:mt-0">
-            <h1 className="text-6xl md:text-9xl font-logo font-bold text-primary mb-4 hover:text-blue-700 transition">
+            <h2 className="text-6xl md:text-9xl font-logo font-bold text-primary mb-4 hover:text-blue-700 transition">
               404
-            </h1>
-            <h2 className="text-2xl md:text-3xl font-semibold font-logo text-secondary mb-6">
-              Página Não Encontrada
             </h2>
+            <h1 className="text-2xl md:text-3xl font-semibold font-logo text-secondary mb-6">
+              Página Não Encontrada
+            </h1>
             <p className="md:text-xl text-base text-primary mb-6">
               Ops! A página que você está procurando não existe.
             </p>
