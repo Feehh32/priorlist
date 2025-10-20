@@ -1,98 +1,140 @@
 import { useEffect, useState } from "react";
 import { AuthContext } from "./AuthContext";
-import useApiRequest from "../hooks/useApiRequest";
+import supabase from "../lib/supabaseClient";
+import PropTypes from "prop-types";
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
-  const { request, error: apiError } = useApiRequest();
+
+  // Function to "cleaning" the user data
+  const cleanUserData = (user) => {
+    if (!user) return null;
+    return {
+      id: user.id,
+      name: user.user_metadata?.name || "",
+      email: user.email,
+    };
+  };
 
   // The useEffect hook is used to restore the user data when the component mounts
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    const id = localStorage.getItem("id");
-    setLoading(true);
-
-    if (!token || !id) {
-      setUser(null);
-      setError(null);
-      setLoading(false);
-      return;
-    }
-
-    // Restore the user based on the token and id
-    const restore = async () => {
+    const getSession = async () => {
       setLoading(true);
-      setError(null);
 
-      const userData = await request("me?id=" + id, "GET", null, {
-        Authorization: `Bearer ${token}`,
-      });
+      const { data, error } = await supabase.auth.getSession();
 
-      if (!userData || userData?.success === false) {
+      if (error) {
+        setError(error.message);
         setUser(null);
-        localStorage.removeItem("token");
-        localStorage.removeItem("id");
-        setError("Não foi possível restaurar os dados do usuário");
+      } else if (data?.session?.user) {
+        setUser(cleanUserData(data.session.user));
+        setError(null);
       } else {
-        setUser(userData);
+        setUser(null);
         setError(null);
       }
-
       setLoading(false);
     };
 
-    restore();
-  }, [request]);
+    getSession();
 
-  // Function to handle user login and get the user data
-  const login = async (credentials) => {
+    // Listen authentication changes (login/logout)
+    const { data: listener } = supabase.auth.onAuthStateChange(
+      (_event, session) => {
+        setUser(cleanUserData(session?.user));
+      }
+    );
+
+    // Unsubscribe from the listener on unmount
+    return () => {
+      listener?.subscription.unsubscribe();
+    };
+  }, []);
+
+  // Function to handle user registration
+  const register = async ({ name, email, password }) => {
     setError(null);
     setLoading(true);
 
-    const loginResp = await request("login", "POST", credentials);
+    try {
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: { name },
+        },
+      });
 
-    if (loginResp?.success === false) {
-      setError(loginResp.error.message);
+      if (error) throw error;
+
+      const user = data.user;
+
+      const { error: profileError } = await supabase
+        .from("profiles")
+        .insert({ id: user.id, name });
+
+      if (profileError) throw profileError;
+
+      setUser(cleanUserData(user));
+      setLoading(false);
+      return user;
+    } catch (err) {
+      setError(err.message);
       setLoading(false);
       return null;
     }
+  };
 
-    localStorage.setItem("token", loginResp.token);
-    localStorage.setItem("id", loginResp.id);
+  // function to handle login with email and password
+  const login = async ({ email, password }) => {
+    setError(null);
+    setLoading(true);
 
-    const userData = await request("me?id=" + loginResp.id, "GET", null, {
-      Authorization: `Bearer ${loginResp.token}`,
-    });
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
 
-    if (!userData || userData?.success === false) {
-      localStorage.removeItem("token");
-      localStorage.removeItem("id");
-      setError(
-        apiError?.message ||
-          "Não foi possível obter os dados do usuário após o login"
-      );
+      if (error) throw error;
+
+      setUser(cleanUserData(data.user));
+      setLoading(false);
+      return data?.user;
+    } catch (err) {
+      setError(err.message);
+      setLoading(false);
       return null;
     }
-
-    setUser(userData);
-    setError(null);
-    setLoading(false);
-    return userData;
   };
 
   // Function to handle user logout
-  const logout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("id");
-    setUser(null);
+
+  const logout = async () => {
     setError(null);
+    setLoading(true);
+
+    try {
+      await supabase.auth.signOut();
+      setUser(null);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
-    <AuthContext.Provider value={{ user, loading, login, logout, error }}>
+    <AuthContext.Provider
+      value={{ user, register, login, logout, loading, error }}
+    >
       {children}
     </AuthContext.Provider>
   );
+};
+
+AuthProvider.propTypes = {
+  children: PropTypes.node.isRequired,
 };

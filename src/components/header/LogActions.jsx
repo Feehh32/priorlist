@@ -6,7 +6,8 @@ import { MdOutlineLogout } from "react-icons/md";
 const LogActions = () => {
   const { user, logout } = useContext(AuthContext);
   const navigate = useNavigate();
-  const usernameInitials = user?.name[0].toUpperCase();
+
+  const usernameInitials = user?.name ? user?.name[0].toUpperCase() : "?";
 
   const handleLogout = () => {
     logout();
@@ -23,7 +24,7 @@ const LogActions = () => {
         {usernameInitials}
       </button>
       <p className="hidden md:block text-white font-normal text-sm ">
-        Bem vindo, {user?.email}
+        Bem vindo, {user?.name.split(" ")[0]}
       </p>
       <button onClick={handleLogout} className="cursor-pointer flex gap-2">
         <MdOutlineLogout color="white" size={20} />

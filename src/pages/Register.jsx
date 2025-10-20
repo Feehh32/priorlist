@@ -1,10 +1,10 @@
 import { Link, useNavigate } from "react-router-dom";
-import FormInput from "../components/input/FormInput";
-import { useState, useEffect } from "react";
-import useApiRequest from "../hooks/useApiRequest";
+import { useState, useEffect, useContext } from "react";
+import { AuthContext } from "../contexts/AuthContext";
 import Spinner from "../components/UI/spinner";
-import registerValidator from "../utils/registerValidators";
+import FormInput from "../components/input/FormInput";
 import PageTransition from "../components/pageTransition/PageTransition";
+import registerValidator from "../utils/registerValidators";
 
 const Register = () => {
   const [bodyData, setBodyData] = useState({
@@ -15,22 +15,20 @@ const Register = () => {
   });
   const [success, setSuccess] = useState("");
   const [formErrors, setFormErrors] = useState({});
+  const navigate = useNavigate();
+  const { register, error, loading } = useContext(AuthContext);
 
   // dinamic title
   useEffect(() => {
     document.title = "PriorList | Registre-se";
   }, []);
 
-  // Custom hook to handle API requests
-  const { request, error, loading } = useApiRequest();
-
-  const navigate = useNavigate();
-
   // Function to control the inputs
   const handleChange = (e) => {
     setBodyData((prev) => {
       return { ...prev, [e.target.name]: e.target.value };
     });
+    setFormErrors((prev) => ({ ...prev, [e.target.name]: "" }));
   };
 
   // Handler for form submission
@@ -47,15 +45,13 @@ const Register = () => {
     // eslint-disable-next-line no-unused-vars
     const { confirmPassword, ...userData } = bodyData;
 
-    // Send the data to the backend
-    try {
-      await request("users", "POST", userData);
+    //register the user
+    const result = await register(userData);
+    if (result) {
       setSuccess("Conta criada com sucesso!");
       setTimeout(() => {
         navigate("/login");
       }, 2000);
-    } catch {
-      setSuccess("");
     }
   };
 
