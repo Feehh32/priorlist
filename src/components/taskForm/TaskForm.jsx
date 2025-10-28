@@ -1,26 +1,22 @@
 import PropTypes from "prop-types";
 import FormInput from "../input/FormInput";
-import { useContext, useEffect, useState, useRef } from "react";
-import { AuthContext } from "../../contexts/AuthContext";
+import { useEffect, useState, useRef } from "react";
 import taskFormValidator from "../../utils/taskFormValidator";
 import Spinner from "../UI/spinner";
 
-const TaskForm = ({ onSubmit, modalMode, taskToEdit }) => {
-  const { user } = useContext(AuthContext);
+const TaskForm = ({ onSubmit, modalMode, taskToEdit, loading }) => {
   const [formErrors, setFormErrors] = useState({});
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const titleInputRef = useRef(null);
 
   const [formData, setFormData] = useState({
-    userId: user.id,
     title: "",
     description: "",
-    deadline: "",
-    priority: "low",
+    deadline: null,
+    priority: 3,
     completed: false,
     archived: false,
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
   });
 
   useEffect(() => {
@@ -39,10 +35,10 @@ const TaskForm = ({ onSubmit, modalMode, taskToEdit }) => {
   }, []);
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
+    const { name, value, type } = e.target;
     setFormData((prev) => ({
       ...prev,
-      [name]: value,
+      [name]: type === "radio" ? Number(value) : value,
     }));
   };
   const handleSubmit = async (e) => {
@@ -54,12 +50,8 @@ const TaskForm = ({ onSubmit, modalMode, taskToEdit }) => {
 
     // if errors object is not empty, return e stop the function
     if (Object.keys(errors).length > 0) return;
-    setIsSubmitting(true);
-    try {
-      await onSubmit(formData);
-    } finally {
-      setIsSubmitting(false);
-    }
+
+    await onSubmit(formData);
   };
 
   return (
@@ -92,7 +84,7 @@ const TaskForm = ({ onSubmit, modalMode, taskToEdit }) => {
         label="Data Limite"
         placeholder="Estabeleça uma data limite"
         id="deadline"
-        value={formData.deadline}
+        value={formData.deadline ?? ""}
         type="date"
         onChange={handleChange}
       />
@@ -105,8 +97,8 @@ const TaskForm = ({ onSubmit, modalMode, taskToEdit }) => {
             type="radio"
             name="priority"
             id="low"
-            value="low"
-            checked={formData.priority === "low"}
+            value={3}
+            checked={formData.priority === 3}
             onChange={handleChange}
             className="appearance-none w-4 h-4 rounded-full border-2 border-green-500 checked:bg-green-500"
           />
@@ -117,8 +109,8 @@ const TaskForm = ({ onSubmit, modalMode, taskToEdit }) => {
             type="radio"
             name="priority"
             id="medium"
-            value="medium"
-            checked={formData.priority === "medium"}
+            value={2}
+            checked={formData.priority === 2}
             onChange={handleChange}
             className="appearance-none w-4 h-4 rounded-full border-2 border-yellow-500 checked:bg-yellow-500"
           />
@@ -129,8 +121,8 @@ const TaskForm = ({ onSubmit, modalMode, taskToEdit }) => {
             type="radio"
             name="priority"
             id="high"
-            value="high"
-            checked={formData.priority === "high"}
+            value={1}
+            checked={formData.priority === 1}
             onChange={handleChange}
             className="appearance-none w-4 h-4 rounded-full border-2 border-red-500 checked:bg-red-500"
           />
@@ -139,12 +131,12 @@ const TaskForm = ({ onSubmit, modalMode, taskToEdit }) => {
       </fieldset>
       <button
         type="submit"
-        disabled={isSubmitting}
+        disabled={loading}
         className="w-full bg-primary text-white font-semibold py-3 rounded-lg hover:bg-blue-700 transition-colors mt-2 cursor-pointer font-secondary shadow-md flex items-center justify-center"
       >
-        {isSubmitting ? (
+        {loading ? (
           <>
-            <Spinner color="border-white" />
+            <Spinner color="white" />
             <span className="sr-only">Enviando...</span>
           </>
         ) : modalMode === "create" ? (

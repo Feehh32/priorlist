@@ -8,15 +8,15 @@ import TaskActions from "./TaskActions";
 import { AnimatePresence, motion } from "framer-motion";
 
 const priorityGradient = {
-  low: "from-white to-green-100",
-  medium: "from-white to-yellow-100",
-  high: "from-white to-red-100",
+  3: "from-white to-green-100",
+  2: "from-white to-yellow-100",
+  1: "from-white to-red-100",
 };
 
 const priorityColor = {
-  low: "text-green-500",
-  medium: "text-yellow-500",
-  high: "text-red-500",
+  3: "text-green-500",
+  2: "text-yellow-500",
+  1: "text-red-500",
 };
 
 // Used for screen readers
@@ -43,22 +43,23 @@ const TaskList = ({
   onClearCompleted,
   onDeleteRequest,
   onStatusUpdate,
+  loading,
 }) => {
   // Mark as completed (only style change)
   const handleComplete = async (task) => {
     onStatusUpdate({
-      ...task,
+      id: task.id,
       completed: !task.completed,
-      updatedAt: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
     });
   };
 
   // Initiate removal animation
-  const handleRemove = (task) => {
+  const handleRemove = async (task) => {
     onStatusUpdate({
-      ...task,
+      id: task.id,
       archived: true,
-      updatedAt: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
     });
   };
 
@@ -66,7 +67,7 @@ const TaskList = ({
   const mainTasks = tasks.filter((task) => !task.archived);
   const completedTasks = tasks.filter((task) => task.archived);
 
-  return mainTasks.length === 0 && completedTasks.length === 0 ? (
+  return mainTasks.length === 0 && completedTasks.length === 0 && !loading ? (
     <p className="flex items-center justify-center text-secondary font-semibold md:text-lg font-secondary text-center before:content-[''] before:w-1 before:h-10 before:md:h-6">
       Você ainda não tem tarefas. Clique em + Nova Tarefa para começar!
     </p>
@@ -74,7 +75,6 @@ const TaskList = ({
     <ul className="grid md:gap-6 gap-2 max-w-4xl">
       <AnimatePresence>
         {mainTasks.map((task) => {
-          const priority = task.priority.toLowerCase();
           return (
             <motion.li
               key={task.id}
@@ -84,7 +84,7 @@ const TaskList = ({
               exit="exit"
               layout
               className={`relative w-full p-4 rounded-lg shadow-md hover:shadow-lg bg-gradient-to-r ${
-                task.completed ? "bg-gray-300" : priorityGradient[priority]
+                task.completed ? "bg-gray-300" : priorityGradient[task.priority]
               }`}
             >
               <div className="flex gap-4 justify-between items-start">
@@ -93,17 +93,17 @@ const TaskList = ({
                     className={` text-lg md:text-xl font-secondary font-semibold ${
                       task.completed
                         ? "line-through text-secondary"
-                        : priorityColor[priority]
+                        : priorityColor[task.priority]
                     }`}
-                    aria-label={`${task.title}. Prioridade: ${
-                      priority.charAt(0).toUpperCase() + priority.slice(1)
-                    }. ${task.completed ? "Concluída" : "Pendente"}`}
+                    aria-label={`Tarefa: ${task.title} ${
+                      task.completed ? "Concluida" : ""
+                    } - Prioridade ${task.priority}`}
                   >
                     {task.title}
                   </h3>
                   <VisuallyHidden>
                     {task.completed ? " - Concluída" : ""}
-                    {` - Prioridade ${priority}`}
+                    {` - Prioridade ${task.priority}`}
                   </VisuallyHidden>
                   <p className="text-text-main mt-2">{task.description}</p>
                 </div>
@@ -197,10 +197,10 @@ const TaskList = ({
                     <h3 className=" text-lg md:text-xl font-secondary font-semibold text-secondary">
                       {task.title}
                     </h3>
-                    {task.updatedAt && (
+                    {task.updated_at && (
                       <span className="text-sm text-secondary min-w-3xs text-right">
                         {`Finalizado em ${new Date(
-                          task.updatedAt
+                          task.updated_at
                         ).toLocaleDateString("pt-BR")}`}
                       </span>
                     )}

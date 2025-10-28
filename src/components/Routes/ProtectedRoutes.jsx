@@ -9,7 +9,7 @@ const ProtectedRoutes = () => {
   if (loading)
     return (
       <div className="flex items-center justify-center h-screen shadow-md p-4 rounded-lg">
-        <Spinner color="border-primary" />
+        <Spinner size="w-12 h-12" color="primary" />
       </div>
     );
   if (!user) {

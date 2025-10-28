@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { useEffect } from "react";
 import PageTransition from "../components/pageTransition/PageTransition";
+import Spinner from "../components/UI/spinner";
 
 const About = () => {
   // dinamic title

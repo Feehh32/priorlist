@@ -38,6 +38,7 @@ const TaskSortMenu = ({ handleSortOptions }) => {
     const option = selection;
     setSelectedSortOption(option);
     handleSortOptions(option);
+    setIsOpen(false);
   };
 
   useEffect(() => {
@@ -57,8 +58,8 @@ const TaskSortMenu = ({ handleSortOptions }) => {
 
   const options = [
     { value: "default", label: "Padrão" },
+    { value: "deadline", label: "Prazo" },
     { value: "urgents", label: "Urgentes" },
-    { value: "recents", label: "Recentes" },
     { value: "a-z", label: "De A-Z" },
   ];
 
