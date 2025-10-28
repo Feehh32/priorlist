@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import FormInput from "../components/input/FormInput";
 import { useState, useEffect } from "react";
 import Spinner from "../components/UI/spinner";
+import GenericError from "../components/UI/GenericError";
 import loginValidator from "../utils/loginValidator";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useContext } from "react";
@@ -149,7 +150,7 @@ const Login = () => {
               </button>
               {error && (
                 <p className="text-red-500 text-sm text-center" role="alert">
-                  {error}
+                  Email ou senha incorretos
                 </p>
               )}
               <p className="text-sm text-center text-gray-600">
@@ -161,6 +162,13 @@ const Login = () => {
                   Registre-se aqui
                 </Link>
               </p>
+
+              <Link
+                to="/forgot-password"
+                className="text-primary font-medium text-sm hover:underline text-center block"
+              >
+                Esqueceu sua senha?
+              </Link>
             </form>
           </div>
         </motion.section>

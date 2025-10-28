@@ -60,7 +60,7 @@ const Register = () => {
       <section className="min-h-screen flex justify-center items-center flex-col bg-gray-50 p-8 md:p-16">
         {success && (
           <p
-            className="text-green-500 text-sm text-center mb-2 p-2 bg-green-200 rounded-lg border border-green-300"
+            className="text-green-700 text-sm text-center mb-4 p-2 bg-green-200 rounded-lg border border-green-300"
             role="status"
           >
             {success}
@@ -127,7 +127,7 @@ const Register = () => {
             </button>
             {error && (
               <p className="text-red-500 text-sm text-center " role="alert">
-                {error}
+                Usuário já cadastrado
               </p>
             )}
             <p className="text-sm text-center text-gray-600">

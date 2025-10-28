@@ -1,6 +1,6 @@
-import { useEffect, useState, useRef, useContext } from "react";
+import { useEffect, useState } from "react";
 import { MdSearch } from "react-icons/md";
-import { AuthContext } from "../contexts/AuthContext";
+
 import TaskForm from "../components/taskForm/TaskForm";
 import TaskList from "../components/tasks/TaskList";
 import Modal from "../components/modal/Modal";
@@ -8,8 +8,9 @@ import ToastMsg from "../components/notifications/ToastMsg";
 import TaskSortMenu from "../components/tasks/TaskSortMenu";
 import PageTransition from "../components/pageTransition/PageTransition";
 import ConfirmDeleteModal from "../components/tasks/ConfirmDeleteModal";
-import useApiRequest from "../hooks/useApiRequest";
-import handleApiError from "../utils/taskApiErrors";
+import useTasks from "../hooks/useTasks";
+import GenericError from "../components/UI/GenericError";
+import { AnimatePresence } from "framer-motion";
 
 const Tasks = () => {
   const [showModal, setShowModal] = useState(false);
@@ -17,12 +18,19 @@ const Tasks = () => {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [taskToDelete, setTaskToDelete] = useState(null);
   const [taskToEdit, setTaskToEdit] = useState(null);
-  const [tasks, setTasks] = useState([]);
   const [toasts, setToasts] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
-  const { request } = useApiRequest();
-  const { user } = useContext(AuthContext);
-  const originalTaskRef = useRef([]);
+
+  const {
+    createTask,
+    fetchTasks,
+    updateTask,
+    deleteTask,
+    clearArchivedTasks,
+    loading,
+    tasks,
+    error,
+  } = useTasks();
 
   const modalTitleId = "task-modal-title";
 
@@ -33,19 +41,13 @@ const Tasks = () => {
 
   // Fetch tasks
   useEffect(() => {
-    const fetchTasks = async () => {
-      const response = await request(`tasks?userId=${user.id}`, "GET");
-      if (response && !response.error) {
-        originalTaskRef.current = response;
-
-        setTasks(response);
-        const saverdOrder = localStorage.getItem("sortOption") || "default";
-        handleSortChange(saverdOrder, response);
-      }
+    const handleFetchTasks = async () => {
+      const option = localStorage.getItem("sortOption");
+      await fetchTasks(option);
     };
 
-    fetchTasks();
-  }, [request, user.id]);
+    handleFetchTasks();
+  }, []);
 
   // Function to add a new toast message
   const addToast = (message, type = "success") => {
@@ -53,70 +55,56 @@ const Tasks = () => {
     setToasts((prev) => [...prev, { id, message, type }]);
   };
 
-  // Function to add a new task and update the list
+  // Function to add a new task
   const addTask = async (newTask) => {
-    const response = await request("tasks", "POST", newTask);
+    try {
+      const response = await createTask(newTask);
 
-    handleApiError(response.error, addToast);
-    if (response && !response.error) {
+      if (!response) {
+        addToast("Erro ao criar tarefa.", "error");
+        return;
+      }
+
       addToast("Tarefa criada com sucesso!", "success");
-      const updatedOriginalTasks = [...originalTaskRef.current, response];
-      originalTaskRef.current = [...originalTaskRef.current, response];
-      const saverdOrder = localStorage.getItem("sortOption") || "default";
-      handleSortChange(saverdOrder, updatedOriginalTasks);
+    } catch {
+      addToast("Erro inesperado ao criar tarefa.", "error");
+    } finally {
       setShowModal(false);
     }
-    setShowModal(false);
-    return false;
   };
 
   // Function to update a task and update the list
-  const updateTask = async (updatedTask) => {
-    const response = await request(
-      `tasks/${updatedTask.id}`,
-      "PATCH",
-      updatedTask
-    );
+  const handleUpdateTask = async (taskToUpdate) => {
+    try {
+      const response = await updateTask(taskToUpdate);
 
-    handleApiError(response.error, addToast);
-    if (response && !response.error) {
-      addToast("Tarefa atualizada com sucesso!", "update");
+      if (!response) {
+        addToast("Erro ao atualizar tarefa.", "error");
+        return;
+      }
 
-      const updatedOriginalTasks = originalTaskRef.current.map((task) =>
-        task.id === response.id ? response : task
-      );
-      originalTaskRef.current = updatedOriginalTasks;
-
-      const saverdOrder = localStorage.getItem("sortOption") || "default";
-      handleSortChange(saverdOrder, updatedOriginalTasks);
-
+      addToast("Tarefa atualizada com sucesso!", "success");
+    } catch {
+      addToast("Erro inesperado ao atualizar tarefa.", "error");
+    } finally {
       setShowModal(false);
-      return true;
     }
-    setShowModal(false);
-    return false;
   };
 
   // Function to handle the status update (completed/archived) of Tasklist
   const handleStatusUpdate = async (taskToUpdate) => {
-    const response = await request(
-      `tasks/${taskToUpdate.id}`,
-      "PATCH",
-      taskToUpdate
-    );
-
-    handleApiError(response.error, addToast);
-    if (response && !response.error) {
-      setTasks((prev) =>
-        prev.map((task) => (task.id === response.id ? response : task))
-      );
-
-      originalTaskRef.current = originalTaskRef.current.map((task) =>
-        task.id === response.id ? response : task
-      );
-      return true;
+    try {
+      await updateTask(taskToUpdate);
+    } catch {
+      if (Object.keys(taskToUpdate).includes("completed")) {
+        addToast(
+          "Erro inesperado ao tentar marcar a tarefa como completa.",
+          "error"
+        );
+      } else {
+        addToast("Erro inesperado ao arquivar a tarefa.", "error");
+      }
     }
-    return false;
   };
 
   // All 3 functions below are used to delete a task and update the list
@@ -127,35 +115,39 @@ const Tasks = () => {
 
   const handleDeleteConfirm = async (confirmed) => {
     if (confirmed && taskToDelete) {
-      await deleteTask(taskToDelete);
+      await handleDeleteTask(taskToDelete);
     }
     setShowDeleteModal(false);
     setTaskToDelete(null);
   };
 
-  const deleteTask = async (task, showToast = true) => {
-    const response = await request(`tasks/${task.id}`, "DELETE");
-    handleApiError(response.error, addToast);
-    if (response && !response.error) {
+  const handleDeleteTask = async (task, showToast = true) => {
+    try {
+      const response = await deleteTask(task.id);
+      if (!response) {
+        if (showToast) addToast("Error ao deletar a tarefa", "error");
+        return;
+      }
+
       if (showToast) addToast("Tarefa deletada com sucesso!", "success");
-      setTasks((prev) => prev.filter((t) => t.id !== task.id));
-      originalTaskRef.current = originalTaskRef.current.filter(
-        (t) => t.id !== task.id
-      );
+    } catch {
+      if (showToast) {
+        addToast("Erro inesperado ao deletar a tarefa.", "error");
+      }
     }
-    return response;
   };
 
   // Function to delete all tasks marked as completed
-  const clearCompleted = async (completedTasks) => {
-    const responses = await Promise.all(
-      completedTasks.map((task) => deleteTask(task, false))
-    );
-
-    const anyError = responses.some((res) => res?.error);
-
-    if (!anyError) {
+  const handleClearArchivedTasks = async (completedTasks) => {
+    try {
+      const response = await clearArchivedTasks(completedTasks);
+      if (!response) {
+        addToast("Erro ao deletar tarefas concluídas.", "error");
+        return;
+      }
       addToast("Todas as tarefas concluídas foram deletadas!", "success");
+    } catch {
+      addToast("Erro inesperado ao deletar tarefas concluídas.", "error");
     }
   };
 
@@ -185,31 +177,16 @@ const Tasks = () => {
   );
 
   // Function to handle task sorting options
-  const handleSortChange = (newSort, baseTasks = tasks) => {
-    const priorityOrder = { high: 1, medium: 2, low: 3 };
-    switch (newSort) {
-      case "urgents":
-      case "priority":
-        setTasks(
-          [...baseTasks].sort(
-            (a, b) => priorityOrder[a.priority] - priorityOrder[b.priority]
-          )
-        );
-        break;
-      case "recents":
-        setTasks(
-          [...baseTasks].sort(
-            (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
-          )
-        );
-        break;
-      case "a-z":
-        setTasks([...baseTasks].sort((a, b) => a.title.localeCompare(b.title)));
-        break;
-      default:
-        setTasks(originalTaskRef.current);
-    }
+  const handleSortChange = async (option) => {
+    await fetchTasks(option);
   };
+
+  if (error)
+    return (
+      <AnimatePresence>
+        <GenericError error={error} />
+      </AnimatePresence>
+    );
 
   return (
     <PageTransition>
@@ -257,13 +234,14 @@ const Tasks = () => {
               <TaskList
                 tasks={searchTerm ? filteredTasks : tasks}
                 onDeleteRequest={handleDeleteRequest}
-                onClearCompleted={clearCompleted}
+                onClearCompleted={handleClearArchivedTasks}
                 setShowDeleteModal={setShowDeleteModal}
                 onEdit={(task) => {
                   setModalMode("edit");
                   setTaskToEdit(task);
                   setShowModal(true);
                 }}
+                loading={loading}
                 onStatusUpdate={handleStatusUpdate}
               />
             )}
@@ -273,14 +251,16 @@ const Tasks = () => {
           className="fixed bottom-6 w-full md:w-auto left-1/2 -translate-x-1/2 flex flex-col gap-2 z-50"
           aria-live="polite"
         >
-          {toasts.map((toast) => (
-            <ToastMsg
-              key={toast.id}
-              message={toast.message}
-              type={toast.type}
-              onClose={() => handleToastClose(toast.id)}
-            />
-          ))}
+          <AnimatePresence>
+            {toasts.map((toast) => (
+              <ToastMsg
+                key={toast.id}
+                message={toast.message}
+                type={toast.type}
+                onClose={() => handleToastClose(toast.id)}
+              />
+            ))}
+          </AnimatePresence>
         </div>
         <Modal
           isOpen={showModal}
@@ -294,15 +274,22 @@ const Tasks = () => {
             {modalMode === "create" ? "Criar Nova Tarefa" : "Editar Tarefa"}
           </h2>
           <TaskForm
-            onSubmit={modalMode === "create" ? addTask : updateTask}
+            onSubmit={modalMode === "create" ? addTask : handleUpdateTask}
             modalMode={modalMode}
             taskToEdit={taskToEdit}
+            loading={loading}
           />
         </Modal>
         <ConfirmDeleteModal
           isOpen={showDeleteModal}
           confirmDelete={handleDeleteConfirm}
         />
+        <div className="fixed top-0 left-0 right-0 z-50">
+          <AnimatePresence>
+            {/* Renderize GenericError condicionalmente aqui */}
+            {error && <GenericError error={error} key="global-error-banner" />}
+          </AnimatePresence>
+        </div>
       </section>
     </PageTransition>
   );

@@ -1,9 +1,9 @@
 import PropTypes from "prop-types";
 
-const Spinner = ({ size = "w-6 h-6", color = "border-primary" }) => {
+const Spinner = ({ size = "w-6 h-6", color = "primary" }) => {
   return (
     <div
-      className={` ${size} ${color} rounded-full border-4 border-t-transparent animate-spin`}
+      className={` ${size} border-${color} rounded-full border-4 border-t-transparent animate-spin relative opacity-70`}
       aria-live="polite"
       role="status"
     >

@@ -12,6 +12,7 @@ import { AuthProvider } from "./contexts/AuthProvider";
 import ProtectedRoutes from "./components/Routes/ProtectedRoutes";
 
 import { AnimatePresence } from "framer-motion";
+import ForgotPassword from "./pages/ForgotPassword";
 
 function App() {
   const location = useLocation();
@@ -23,6 +24,7 @@ function App() {
             <Route index element={<Home />} />
             <Route path="register" element={<Register />} />
             <Route path="login" element={<Login />} />
+            <Route path="forgot-password" element={<ForgotPassword />} />
             <Route path="about" element={<About />} />
             <Route element={<ProtectedRoutes />}>
               <Route path="tasks" element={<Tasks />} />
