@@ -43,7 +43,8 @@ export const AuthProvider = ({ children }) => {
     // Listen authentication changes (login/logout)
     const { data: listener } = supabase.auth.onAuthStateChange(
       (_event, session) => {
-        setUser(cleanUserData(session?.user));
+        setUser(cleanUserData(session?.user || null));
+        setLoading(false);
       }
     );
 
@@ -126,9 +127,70 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  // Function to handle reset password
+  const resetPassword = async (email) => {
+    setError(null);
+    setLoading(true);
+
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${window.location.origin}/update-password`,
+      });
+
+      if (error) throw error;
+      return {
+        success: true,
+        message:
+          "Se o email estiver correto, você receberá um link para redefinir sua senha.",
+      };
+    } catch (err) {
+      console.error(err.message);
+      setError("Ocorreu um erro ao tentar recuperar sua senha.");
+      return {
+        success: false,
+        message: "Ocorreu um erro ao tentar recuperar sua senha.",
+      };
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Function to update password
+  const updatePassword = async (newPassword) => {
+    setError(null);
+    setLoading(true);
+
+    try {
+      const { data, error } = await supabase.auth.updateUser({
+        password: newPassword,
+      });
+
+      if (error) throw error;
+
+      return { success: true, data };
+    } catch (err) {
+      setError(err.message);
+      return {
+        success: false,
+        message: err.message,
+      };
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <AuthContext.Provider
-      value={{ user, register, login, logout, loading, error }}
+      value={{
+        user,
+        register,
+        login,
+        logout,
+        loading,
+        error,
+        resetPassword,
+        updatePassword,
+      }}
     >
       {children}
     </AuthContext.Provider>

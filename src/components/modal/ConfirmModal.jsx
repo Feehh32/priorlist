@@ -27,7 +27,14 @@ const modal = {
   },
 };
 
-const ConfirmDeleteModal = ({ isOpen, confirmDelete }) => {
+const ConfirmModal = ({
+  isOpen,
+  onConfirm,
+  title = "Tem certeza?",
+  message = "Esta ação não poderá ser desfeita.",
+  confirmLabel = "Confirmar",
+  cancelLabel = "Cancelar",
+}) => {
   const titleId = "delete-modal-title";
   const modalRef = useRef(null);
 
@@ -40,7 +47,7 @@ const ConfirmDeleteModal = ({ isOpen, confirmDelete }) => {
     const handleKeyDown = (e) => {
       if (e.key === "Escape") {
         e.stopPropagation();
-        confirmDelete(false);
+        onConfirm(false);
       }
     };
 
@@ -49,7 +56,7 @@ const ConfirmDeleteModal = ({ isOpen, confirmDelete }) => {
       document.removeEventListener("keydown", handleKeyDown);
       document.body.style.overflow = "unset";
     };
-  }, [isOpen, confirmDelete]);
+  }, [isOpen, onConfirm]);
 
   if (!isOpen) return null;
 
@@ -75,21 +82,22 @@ const ConfirmDeleteModal = ({ isOpen, confirmDelete }) => {
             className="bg-white max-w-md border-t-16 rounded-lg shadow-lg border-primary p-4"
           >
             <h2 className="text-xl text-secondary font-medium" id={titleId}>
-              Tem certeza que deseja excluir essa tarefa?
+              {title}
             </h2>
+            {message && <p className="text-gray-600 text-sm mt-2">{message}</p>}
             <div className="flex justify-center items-center gap-4 mt-4">
               <button
                 className="px-4 py-2 hover:bg-primary hover:text-white cursor-pointer rounded-lg transition-colors duration-300 focus:bg-primary focus:text-white"
                 id="cancel-button"
-                onClick={() => confirmDelete(false)}
+                onClick={() => onConfirm(false)}
               >
-                Cancelar
+                {cancelLabel}
               </button>
               <button
-                onClick={() => confirmDelete(true)}
+                onClick={() => onConfirm(true)}
                 className="px-4 py-2 hover:bg-red-600 hover:text-white cursor-pointer rounded-lg transition-colors duration-300 focus:bg-red-600 focus:text-white"
               >
-                Excluir
+                {confirmLabel}
               </button>
             </div>
           </motion.div>
@@ -98,4 +106,4 @@ const ConfirmDeleteModal = ({ isOpen, confirmDelete }) => {
     </AnimatePresence>
   );
 };
-export default ConfirmDeleteModal;
+export default ConfirmModal;

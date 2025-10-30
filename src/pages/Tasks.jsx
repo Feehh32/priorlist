@@ -7,7 +7,7 @@ import Modal from "../components/modal/Modal";
 import ToastMsg from "../components/notifications/ToastMsg";
 import TaskSortMenu from "../components/tasks/TaskSortMenu";
 import PageTransition from "../components/pageTransition/PageTransition";
-import ConfirmDeleteModal from "../components/tasks/ConfirmDeleteModal";
+import ConfirmModal from "../components/modal/ConfirmModal";
 import useTasks from "../hooks/useTasks";
 import GenericError from "../components/UI/GenericError";
 import { AnimatePresence } from "framer-motion";
@@ -280,9 +280,11 @@ const Tasks = () => {
             loading={loading}
           />
         </Modal>
-        <ConfirmDeleteModal
+        <ConfirmModal
           isOpen={showDeleteModal}
-          confirmDelete={handleDeleteConfirm}
+          onConfirm={handleDeleteConfirm}
+          title="Tem certeza que deseja excluir essa tarefa?"
+          message="Esta ação não poderá ser desfeita."
         />
         <div className="fixed top-0 left-0 right-0 z-50">
           <AnimatePresence>

@@ -7,12 +7,13 @@ import Login from "./pages/Login";
 import Tasks from "./pages/Tasks";
 import About from "./pages/About";
 import PageNotFound from "./pages/PageNotFound";
+import ForgotPassword from "./pages/ForgotPassword";
+import UpdatePassword from "./pages/UpdatePassword";
 
 import { AuthProvider } from "./contexts/AuthProvider";
 import ProtectedRoutes from "./components/Routes/ProtectedRoutes";
 
 import { AnimatePresence } from "framer-motion";
-import ForgotPassword from "./pages/ForgotPassword";
 
 function App() {
   const location = useLocation();
@@ -26,6 +27,7 @@ function App() {
             <Route path="login" element={<Login />} />
             <Route path="forgot-password" element={<ForgotPassword />} />
             <Route path="about" element={<About />} />
+            <Route path="update-password" element={<UpdatePassword />} />
             <Route element={<ProtectedRoutes />}>
               <Route path="tasks" element={<Tasks />} />
             </Route>

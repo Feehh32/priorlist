@@ -51,6 +51,7 @@ const Login = () => {
     setLoginData((prev) => {
       return { ...prev, [e.target.name]: e.target.value };
     });
+    setFormErrors((prev) => ({ ...prev, [e.target.name]: "" }));
   };
 
   const handleSubmit = async (e) => {
