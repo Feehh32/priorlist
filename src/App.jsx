@@ -12,8 +12,10 @@ import UpdatePassword from "./pages/UpdatePassword";
 
 import { AuthProvider } from "./contexts/AuthProvider";
 import ProtectedRoutes from "./components/Routes/ProtectedRoutes";
+import DeactivatedRoute from "./components/Routes/DeactivatedRoute";
 
 import { AnimatePresence } from "framer-motion";
+import AccountDeactivated from "./pages/AccountDeactivated";
 
 function App() {
   const location = useLocation();
@@ -28,6 +30,12 @@ function App() {
             <Route path="forgot-password" element={<ForgotPassword />} />
             <Route path="about" element={<About />} />
             <Route path="update-password" element={<UpdatePassword />} />
+            <Route element={<DeactivatedRoute />}>
+              <Route
+                path="account-deactivated"
+                element={<AccountDeactivated />}
+              />
+            </Route>
             <Route element={<ProtectedRoutes />}>
               <Route path="tasks" element={<Tasks />} />
             </Route>

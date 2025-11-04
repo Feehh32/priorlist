@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useLocation } from "react-router-dom";
 import { AuthContext } from "./AuthContext";
 import supabase from "../lib/supabaseClient";
 import PropTypes from "prop-types";
@@ -7,6 +8,7 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
+  const location = useLocation();
 
   // Function to "cleaning" the user data
   const cleanUserData = (user) => {
@@ -54,6 +56,10 @@ export const AuthProvider = ({ children }) => {
     };
   }, []);
 
+  useEffect(() => {
+    if (error) setError(null);
+  }, [location.pathname]);
+
   // Function to handle user registration
   const register = async ({ name, email, password }) => {
     setError(null);
@@ -100,6 +106,22 @@ export const AuthProvider = ({ children }) => {
       });
 
       if (error) throw error;
+
+      const authenticatedUser = data.user;
+      const { data: userRecord, error: fetchError } = await supabase
+        .from("profiles")
+        .select("id, active, name")
+        .eq("id", authenticatedUser.id)
+        .single();
+
+      if (fetchError) throw fetchError;
+
+      if (!userRecord.active) {
+        await supabase.auth.signOut();
+        throw new Error(
+          "Sua conta foi desativada. Entre em contato ou crie uma nova conta."
+        );
+      }
 
       setUser(cleanUserData(data.user));
       setLoading(false);
@@ -179,17 +201,46 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  // Deactivate user account
+  const deactivateAccount = async () => {
+    setError(null);
+    setLoading(true);
+
+    try {
+      if (!user) throw new Error("Usuário não encontrado.");
+
+      const { error } = await supabase
+        .from("profiles")
+        .update({ active: false })
+        .eq("id", user.id);
+
+      await supabase.from("tasks").delete().eq("user_id", user.id);
+
+      if (error) throw error;
+
+      setUser(null);
+
+      return { success: true, message: "Conta desativada com sucesso." };
+    } catch (err) {
+      setError(err.message);
+      return { success: false, message: "Erro ao desativar a conta." };
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <AuthContext.Provider
       value={{
         user,
+        loading,
+        error,
         register,
         login,
         logout,
-        loading,
-        error,
         resetPassword,
         updatePassword,
+        deactivateAccount,
       }}
     >
       {children}

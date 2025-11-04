@@ -12,6 +12,7 @@ const ProtectedRoutes = () => {
         <Spinner size="w-12 h-12" color="primary" />
       </div>
     );
+
   if (!user) {
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
