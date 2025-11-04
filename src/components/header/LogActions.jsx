@@ -9,7 +9,7 @@ import useOutsideClick from "../../hooks/useOutsideClick";
 import ConfirmModal from "../modal/ConfirmModal";
 
 const LogActions = () => {
-  const { user, logout } = useContext(AuthContext);
+  const { user, logout, deactivateAccount } = useContext(AuthContext);
   const [isOpen, setIsOpen] = useState(false);
   const navigate = useNavigate();
   const menuRef = useRef(null);
@@ -24,11 +24,21 @@ const LogActions = () => {
 
   useOutsideClick(menuRef, () => setIsOpen(false));
 
-  const disableAccount = (confirmation) => {
+  const disableAccount = async (confirmation) => {
     if (confirmation) {
-      console.log("Conta desativada");
       setShowConfirm((prev) => !prev);
       setIsOpen((prev) => !prev);
+      const result = await deactivateAccount();
+
+      if (result.success) {
+        logout();
+        navigate("/account-deactivated", {
+          replace: true,
+          state: { accountWasDeactivated: true },
+        });
+      } else {
+        console.log(result.message);
+      }
     } else {
       setShowConfirm((prev) => !prev);
       setIsOpen((prev) => !prev);

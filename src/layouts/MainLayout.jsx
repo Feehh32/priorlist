@@ -8,7 +8,8 @@ const MainLayout = () => {
 
   const hideHeaderFooter =
     location.pathname.startsWith("/login") ||
-    location.pathname.startsWith("/register");
+    location.pathname.startsWith("/register") ||
+    location.pathname.startsWith("/account-deactivated");
 
   return (
     <div className="min-h-screen flex flex-col">
