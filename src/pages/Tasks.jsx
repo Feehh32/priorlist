@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useMemo, useCallback, useEffect, useState } from "react";
 import { MdSearch } from "react-icons/md";
 
 import TaskForm from "../components/taskForm/TaskForm";
@@ -58,7 +58,10 @@ const Tasks = () => {
   // Function to add a new task
   const addTask = async (newTask) => {
     try {
-      const response = await createTask(newTask);
+      const response = await createTask(
+        newTask,
+        localStorage.getItem("sortOption")
+      );
 
       if (!response) {
         addToast("Erro ao criar tarefa.", "error");
@@ -76,7 +79,10 @@ const Tasks = () => {
   // Function to update a task and update the list
   const handleUpdateTask = async (taskToUpdate) => {
     try {
-      const response = await updateTask(taskToUpdate);
+      const response = await updateTask(
+        taskToUpdate,
+        localStorage.getItem("sortOption")
+      );
 
       if (!response) {
         addToast("Erro ao atualizar tarefa.", "error");
@@ -108,34 +114,40 @@ const Tasks = () => {
   };
 
   // All 3 functions below are used to delete a task and update the list
-  const handleDeleteRequest = (taskId) => {
+  const handleDeleteRequest = useCallback((taskId) => {
     setTaskToDelete(taskId);
     setShowDeleteModal(true);
-  };
+  }, []);
 
-  const handleDeleteConfirm = async (confirmed) => {
-    if (confirmed && taskToDelete) {
-      await handleDeleteTask(taskToDelete);
-    }
-    setShowDeleteModal(false);
-    setTaskToDelete(null);
-  };
+  const handleDeleteTask = useCallback(
+    async (task, showToast = true) => {
+      try {
+        const response = await deleteTask(task.id);
+        if (!response) {
+          if (showToast) addToast("Error ao deletar a tarefa", "error");
+          return;
+        }
 
-  const handleDeleteTask = async (task, showToast = true) => {
-    try {
-      const response = await deleteTask(task.id);
-      if (!response) {
-        if (showToast) addToast("Error ao deletar a tarefa", "error");
-        return;
+        if (showToast) addToast("Tarefa deletada com sucesso!", "success");
+      } catch {
+        if (showToast) {
+          addToast("Erro inesperado ao deletar a tarefa.", "error");
+        }
       }
+    },
+    [deleteTask]
+  );
 
-      if (showToast) addToast("Tarefa deletada com sucesso!", "success");
-    } catch {
-      if (showToast) {
-        addToast("Erro inesperado ao deletar a tarefa.", "error");
+  const handleDeleteConfirm = useCallback(
+    async (confirmed) => {
+      if (confirmed && taskToDelete) {
+        await handleDeleteTask(taskToDelete);
       }
-    }
-  };
+      setShowDeleteModal(false);
+      setTaskToDelete(null);
+    },
+    [handleDeleteTask, taskToDelete]
+  );
 
   // Function to delete all tasks marked as completed
   const handleClearArchivedTasks = async (completedTasks) => {
@@ -152,14 +164,14 @@ const Tasks = () => {
   };
 
   // Function to remove the toast message
-  const handleToastClose = (id) => {
+  const handleToastClose = useCallback((id) => {
     setToasts((prev) => prev.filter((toast) => toast.id !== id));
-  };
+  }, []);
 
   // Function to handle the value of search input
-  const handleChangeSearch = (e) => {
+  const handleChangeSearch = useCallback((e) => {
     setSearchTerm(e.target.value);
-  };
+  }, []);
 
   // Function to normalize strings and make the search insensitive
   const normalizeString = (str) =>
@@ -170,23 +182,23 @@ const Tasks = () => {
       .trim();
 
   // Filter tasks by title when user search something
-  const filteredTasks = tasks.filter(
-    (task) =>
-      normalizeString(task.title).includes(normalizeString(searchTerm)) &&
-      task.archived === false
+  const filteredTasks = useMemo(
+    () =>
+      tasks.filter(
+        (task) =>
+          normalizeString(task.title).includes(normalizeString(searchTerm)) &&
+          task.archived === false
+      ),
+    [tasks, searchTerm]
   );
 
   // Function to handle task sorting options
-  const handleSortChange = async (option) => {
-    await fetchTasks(option);
-  };
-
-  if (error)
-    return (
-      <AnimatePresence>
-        <GenericError error={error} />
-      </AnimatePresence>
-    );
+  const handleSortChange = useCallback(
+    async (option) => {
+      await fetchTasks(option);
+    },
+    [fetchTasks]
+  );
 
   return (
     <PageTransition>
@@ -288,7 +300,6 @@ const Tasks = () => {
         />
         <div className="fixed top-0 left-0 right-0 z-50">
           <AnimatePresence>
-            {/* Renderize GenericError condicionalmente aqui */}
             {error && <GenericError error={error} key="global-error-banner" />}
           </AnimatePresence>
         </div>

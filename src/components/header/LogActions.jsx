@@ -3,8 +3,7 @@ import { useNavigate, Link } from "react-router-dom";
 // eslint-disable-next-line no-unused-vars
 import { motion, AnimatePresence } from "framer-motion";
 import { AuthContext } from "../../contexts/AuthContext";
-import { MdOutlineLogout } from "react-icons/md";
-import { MdOutlineDeleteOutline } from "react-icons/md";
+import { MdOutlineLogout, MdOutlineDeleteOutline } from "react-icons/md";
 import useOutsideClick from "../../hooks/useOutsideClick";
 import ConfirmModal from "../modal/ConfirmModal";
 

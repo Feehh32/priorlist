@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { AuthContext } from "../contexts/AuthContext";
 import resetPasswordValidator from "../utils/updatePasswordValidator";
 import PageTransition from "../components/pageTransition/PageTransition";
-import { FaArrowLeftLong } from "react-icons/fa6";
+import { MdOutlineArrowBack } from "react-icons/md";
 import FormInput from "../components/input/FormInput";
 import Spinner from "../components/UI/spinner";
 
@@ -112,7 +112,7 @@ const UpdatePassword = () => {
             className="text-primary font-medium text-sm hover:underline text-center flex justify-center items-center gap-2 mb-4 md:mb-8 max-w-fit m-auto"
             to={"/login"}
           >
-            <FaArrowLeftLong aria-hidden="true" />
+            <MdOutlineArrowBack size={18} aria-hidden="true" />
             <span> Voltar ao login</span>
           </Link>
         </div>

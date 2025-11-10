@@ -22,6 +22,7 @@ const AccountDeactivated = () => {
           </p>
           <Link
             to="/"
+            aria-label="Voltar para a página inicial do Priolist"
             className="bg-primary text-white px-4 py-2 rounded-lg shadow-md hover:bg-blue-700 transition-all duration-300 mt-8 cursor-pointer"
           >
             Voltar à tela inicial

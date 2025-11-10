@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import NotFoundImg from "../assets/404-img.png";
+import NotFoundImg from "../assets/404-img.webp";
 import { useContext } from "react";
 import { AuthContext } from "../contexts/AuthContext";
 import PageTransition from "../components/pageTransition/PageTransition";
@@ -8,7 +8,7 @@ const PageNotFound = () => {
   const { user } = useContext(AuthContext);
   return (
     <PageTransition>
-      <div className="relative min-h-screen md:grid md:grid-cols-2">
+      <div className="relative min-h-screen md:grid md:grid-cols-[2fr_3fr] ">
         <main
           className="flex-1 flex  items-center justify-center text-center p-6"
           role="status"
@@ -36,11 +36,19 @@ const PageNotFound = () => {
             </div>
           </div>
         </main>
-        <img
-          src={NotFoundImg}
-          alt="Página não encontrada"
-          className="md:w-auto md:z-0 md:opacity-100 top-0 right-0 object-cover w-full h-screen absolute -z-10  opacity-60"
-        />
+        <picture>
+          <source srcSet={NotFoundImg} type="image/webp" />
+          <img
+            src={NotFoundImg}
+            alt="Ilustração representando uma página não encontrada"
+            width="1472"
+            height="832"
+            loading="lazy"
+            decoding="async"
+            fetchPriority="low"
+            className="md:w-auto md:z-0 md:opacity-100 top-0 right-0 object-cover w-full h-screen absolute -z-10 opacity-25"
+          />
+        </picture>
       </div>
     </PageTransition>
   );

@@ -1,6 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { MdMoreVert, MdEdit } from "react-icons/md";
-import { FaTrash } from "react-icons/fa";
+import { MdMoreVert, MdEdit, MdDelete } from "react-icons/md";
 import PropTypes from "prop-types";
 import useOutsideClick from "../../hooks/useOutsideClick";
 // eslint-disable-next-line no-unused-vars
@@ -70,7 +69,7 @@ const TaskActions = ({ task, onEdit, onDeleteRequest }) => {
           onClick={() => onDeleteRequest(task)}
           className="flex items-center gap-1 px-3 py-1 text-sm text-secondary rounded-md hover:bg-primary hover:text-white transition cursor-pointer"
         >
-          <FaTrash size={16} aria-hidden="true" />
+          <MdDelete size={18} aria-hidden="true" />
           Excluir
         </button>
       </div>
@@ -126,7 +125,7 @@ const TaskActions = ({ task, onEdit, onDeleteRequest }) => {
                   className="flex gap-2 items-center text-sm p-3 w-full text-left"
                   role="menuitem"
                 >
-                  <FaTrash
+                  <MdDelete
                     size={16}
                     className="text-secondary"
                     aria-hidden="true"

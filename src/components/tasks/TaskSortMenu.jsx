@@ -1,6 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { MdOutlineSort } from "react-icons/md";
-import { MdCheck } from "react-icons/md";
+import { MdOutlineSort, MdCheck } from "react-icons/md";
 import PropTypes from "prop-types";
 import useOutsideClick from "../../hooks/useOutsideClick";
 // eslint-disable-next-line no-unused-vars

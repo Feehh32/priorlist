@@ -1,6 +1,7 @@
 import { useState, useContext } from "react";
 import { AuthContext } from "../contexts/AuthContext";
 import supabase from "../lib/supabaseClient";
+import sortTasks from "../utils/sortTasks";
 
 const useTasks = () => {
   const { user } = useContext(AuthContext);
@@ -8,7 +9,6 @@ const useTasks = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  // Fetch tasks based on user id and sort option
   const fetchTasks = async (sortOption = "default") => {
     if (!user) return;
     setLoading(true);
@@ -45,7 +45,7 @@ const useTasks = () => {
   };
 
   // Create a new task
-  const createTask = async (task) => {
+  const createTask = async (task, sortOption = "default") => {
     if (!user) return null;
     setLoading(true);
     setError(null);
@@ -59,7 +59,12 @@ const useTasks = () => {
       if (error) throw error;
 
       const newTask = data[0];
-      setTasks((prev) => [...prev, newTask]);
+      setTasks((prev) => {
+        const newTasks = [...prev, newTask];
+        return sortTasks(newTasks, sortOption);
+      });
+
+      fetchTasks(sortOption);
 
       return newTask;
     } catch (err) {
@@ -70,7 +75,7 @@ const useTasks = () => {
   };
 
   // Update a task
-  const updateTask = async (task) => {
+  const updateTask = async (task, sortOption = "default") => {
     if (!user) return null;
     setLoading(true);
     setError(null);
@@ -86,7 +91,15 @@ const useTasks = () => {
       if (error) throw error;
 
       const updatedTask = data[0];
-      setTasks((prev) => prev.map((t) => (t.id === task.id ? updatedTask : t)));
+
+      setTasks((prev) => {
+        const tasksWithUpdate = prev.map((t) =>
+          t.id === task.id ? updatedTask : t
+        );
+        return sortTasks(tasksWithUpdate, sortOption);
+      });
+
+      fetchTasks(sortOption);
 
       return updatedTask;
     } catch (err) {

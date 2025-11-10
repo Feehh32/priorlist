@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import HeroImage from "../assets/hero-image.png";
+import HeroImage from "../assets/hero-image.webp";
 import { useEffect } from "react";
 // eslint-disable-next-line no-unused-vars
 import { motion } from "framer-motion";
@@ -61,11 +61,20 @@ const Home = () => {
             </div>
           </div>
           <div className="md:flex-1 flex justify-center">
-            <img
-              src={HeroImage}
-              alt="Pessoa organizando tarefas em uma lista digital"
-              className="w-full max-w-md"
-            />
+            <picture>
+              <source srcSet={HeroImage} type="image/webp" />
+              <img
+                src={HeroImage}
+                alt="Pessoa organizando tarefas em uma lista digital"
+                width="1472"
+                height="832"
+                loading="eager"
+                decoding="async"
+                fetchPriority="high"
+                className="w-full max-w-md"
+                style={{ aspectRatio: "3 / 2", height: "auto" }}
+              />
+            </picture>
           </div>
         </motion.section>
 

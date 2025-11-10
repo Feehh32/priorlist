@@ -1,9 +1,11 @@
 import PropTypes from "prop-types";
-import { MdCheck } from "react-icons/md";
-import { MdOutlineErrorOutline } from "react-icons/md";
-import { MdWarning } from "react-icons/md";
-import { MdOutlineClose } from "react-icons/md";
-import { MdUpdate } from "react-icons/md";
+import {
+  MdCheck,
+  MdOutlineErrorOutline,
+  MdWarning,
+  MdOutlineClose,
+  MdUpdate,
+} from "react-icons/md";
 import { useEffect } from "react";
 // eslint-disable-next-line no-unused-vars
 import { motion } from "framer-motion";

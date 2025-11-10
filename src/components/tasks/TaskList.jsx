@@ -1,7 +1,9 @@
 import PropTypes from "prop-types";
-import { MdCalendarMonth } from "react-icons/md";
-import { MdOutlineCheck } from "react-icons/md";
-import { MdDeleteForever } from "react-icons/md";
+import {
+  MdCalendarMonth,
+  MdDeleteForever,
+  MdOutlineCheck,
+} from "react-icons/md";
 import TaskActions from "./TaskActions";
 
 // eslint-disable-next-line no-unused-vars

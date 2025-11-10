@@ -1,6 +1,5 @@
-import { FaGithubSquare } from "react-icons/fa";
+import { FaGithubSquare, FaLinkedin } from "react-icons/fa";
 import { MdEmail } from "react-icons/md";
-import { FaLinkedin } from "react-icons/fa";
 const Footer = () => {
   return (
     <footer className="bg-secondary text-white text-center py-4">

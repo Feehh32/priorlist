@@ -1,11 +1,66 @@
 @import "tailwindcss";
 
+:root {
+  --font-primary: "Inter", system-ui, -apple-system, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif;
+  --font-secondary: "Raleway", system-ui, -apple-system, "Segoe UI", Roboto,
+    sans-serif;
+  --font-logo: "Montserrat", system-ui, -apple-system, "Segoe UI", Roboto,
+    sans-serif;
+
+  /* cores etc */
+  --color-primary: #2563eb;
+  --color-secondary: #4b5563;
+  --color-text-main: #111827;
+  --color-bg-main: #f9fafb;
+}
+
 body {
   font-family: var(--font-primary);
   color: var(--color-text-main);
   background-color: var(--color-bg-main);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+@font-face {
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("/fonts/Inter18pt-Regular.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url("/fonts/Inter18pt-SemiBold.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Raleway";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("/fonts/Raleway-Regular.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Raleway";
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url("/fonts/Raleway-SemiBold.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Montserrat";
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url("/fonts/Montserrat-SemiBold.woff2") format("woff2");
 }
 
 @layer base {
